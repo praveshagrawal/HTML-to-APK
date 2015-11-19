@@ -60,7 +60,7 @@
 
 
 
-## **[Download Now!](https://github.com/praveshagrawal/Website-2-APK-Builder/releases/download/Website_2_APK_Builder_v1.0_Beta/Website.to.APK.Builder.exe)**
+## **[Download Now!](https://sourceforge.net/projects/website2apk/files/latest/download)**
 
 
 ![screenshot_121_1](https://cloud.githubusercontent.com/assets/12152322/11269000/2d861686-8eda-11e5-9e18-c338d224235f.png)
@@ -74,4 +74,4 @@
 
 Follow Me [@praveshagrawal](https://github.com/praveshagrawal/)
 
-## **[Download Now!](https://github.com/praveshagrawal/Website-2-APK-Builder/releases/download/Website_2_APK_Builder_v1.0_Beta/Website.to.APK.Builder.exe)**
+## **[Download Now!](https://sourceforge.net/projects/website2apk/files/latest/download)**
