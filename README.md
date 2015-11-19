@@ -9,29 +9,53 @@
  **Highlights:**
 
 > Build Android Apps easily from your Web Content
+
 > Create Apps in seconds for your Live Website
+
 > Custom icon for your App
+
 > Custom Splash screen
+
 > Custom Package Name
+
 > Custom Android Permissions
+
 > Custom Error Pages
+
 > Google Play Ready Android App
+
 > Login Session Keeping
+
 > About Dialog
+
 > File Upload Support
+
 > Camera Upload Support
+
 > Camcorder Video Recording Upload
+
 > Location issue fixed
+
 > Custom App version
+
 > Customised App Name
+
 > Zoom Buttons Option
+
 > Custom developer Tagline
+
 > Exit Button
+
 > Completely Ad-Free
+
 > No Back-Links
+
 > User Friendly
+
 > Best App Results for Responsive Sites
+
 > Custom Progress Wheel
+
 > Bug Fixes**
 
 
