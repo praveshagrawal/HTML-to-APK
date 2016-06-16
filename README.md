@@ -1,77 +1,57 @@
-# HTML to APK Converter
+# **Website 2 APK Builder 2.1 Pro**
 
->Convert your Website to a working Android App.
+# **HTML to APK Converter**
 
->Supports html, php, htm, js, css.
+>Convert your Website or HTML5 app to a working Android App.
+
+>Supports html5, html, php, htm, js, css.
 
 >Build app from any web server site or from local directory.
 
  **Highlights:**
+ - Build Android Apps easily from your HTML5 or Web Content
+ - Create Apps in seconds for your Live Website
+ - AdMob Integration
+ - Banner Ads
+ - Interstitial Ads
+ - Custom Splash screen
+ - Custom Package Name
+ - Custom Android Permissions
+ - Custom Error Pages
+ - Google Play Ready Android App
+ - Login Session Keeping
+ - Supports HTML5
+ - Configurable Caching Options
+ - Offine HTML5 Video Support
+ - File Upload Support
+ - Camera Upload Support
+ - Save Project as .webapp file
+ - Camcorder Video Recording Upload
+ - Location issue fixed
+ - Custom App version
+ - Set App Orientation
+ - Zoom Buttons Option
+ - About Dialog
+ - Custom developer Tagline
+ - Centered Progress Wheel
+ - Custom Progress Wheel
+ - Set Splash Duration
+ - Exit Button
+ - Completely Ad-Free
+ - No Back-Links
+ - User Friendly
+ - Best App Results for Responsive Sites
+ - Bug Fixes**
 
-> Build Android Apps easily from your Web Content
-
-> Create Apps in seconds for your Live Website
-
-> Custom icon for your App
-
-> Custom Splash screen
-
-> Custom Package Name
-
-> Custom Android Permissions
-
-> Custom Error Pages
-
-> Google Play Ready Android App
-
-> Login Session Keeping
-
-> About Dialog
-
-> File Upload Support
-
-> Camera Upload Support
-
-> Camcorder Video Recording Upload
-
-> Location issue fixed
-
-> Custom App version
-
-> Customised App Name
-
-> Zoom Buttons Option
-
-> Custom developer Tagline
-
-> Exit Button
-
-> Completely Ad-Free
-
-> No Back-Links
-
-> User Friendly
-
-> Best App Results for Responsive Sites
-
-> Custom Progress Wheel
-
-> Bug Fixes**
+## **[Download Now!](html2apk.praveshagrawal.com/download.html)**
 
 
 
-## **[Download Now!](https://sourceforge.net/projects/website2apk/files/latest/download)**
-
-
-![screenshot_121_1](https://cloud.githubusercontent.com/assets/12152322/11269000/2d861686-8eda-11e5-9e18-c338d224235f.png)
-
-![screenshot_121_2](https://cloud.githubusercontent.com/assets/12152322/11269012/541d59da-8eda-11e5-98d9-10a2aa51e0cb.png)
-
-![screenshot_121_3](https://cloud.githubusercontent.com/assets/12152322/11269039/91140f32-8eda-11e5-9186-1e6e1ee03a9c.png)
-
+![screenshot1](https://a.fsdn.com/con/app/proj/website2apk/screenshots/Screenshot1_v2_1.png)
 
 **For Updates & More Releases:**
 
 Follow Me [@praveshagrawal](https://github.com/praveshagrawal/)
+(http://www.praveshagrawal.com/)
 
-## **[Download Now!](https://sourceforge.net/projects/website2apk/files/latest/download)**
+## **[Download Now!](html2apk.praveshagrawal.com/download.html)**
