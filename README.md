@@ -1,4 +1,4 @@
-# **Website 2 APK Builder 2.1 Pro**
+# **Website 2 APK Builder 2.2 Pro**
 
 # **HTML to APK Converter**
 
@@ -9,6 +9,13 @@
 >Build app from any web server site or from local directory.
 
  **Highlights:**
+ - jQuery, Ionic & jQueryMobile support for Offline HTML Apps.
+ - App Share Button
+ - FullScreen Mode
+ - Vibration Support
+ - Skype, Whatsapp, SMS, Intent links Support
+ - Externl Links Open Outside (Optional Supprted)
+ - Confirm on Exit (Optional to Enable)
  - Build Android Apps easily from your HTML5 or Web Content
  - Create Apps in seconds for your Live Website
  - AdMob Integration
@@ -47,7 +54,7 @@
 
 
 
-![screenshot1](https://a.fsdn.com/con/app/proj/website2apk/screenshots/Screenshot1_v2_1.png)
+![screenshot1](https://a.fsdn.com/con/app/proj/website2apk/screenshots/Screenshot_v2.2_1.png)
 
 **For Updates & More Releases:**
 
