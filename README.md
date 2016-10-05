@@ -50,7 +50,7 @@
  - Best App Results for Responsive Sites
  - Bug Fixes**
 
-## **[Download Now!](http://html2apk.praveshagrawal.com/download.html)**
+## **[Download Now!](https://websitetoapk.com/download.html)**
 
 
 
@@ -61,4 +61,4 @@
 Follow Me [@praveshagrawal](https://github.com/praveshagrawal/)
 (http://www.praveshagrawal.com/)
 
-## **[Download Now!](http://html2apk.praveshagrawal.com/download.html)**
+## **[Download Now!](https://websitetoapk.com/download.html)**
