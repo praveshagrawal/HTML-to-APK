@@ -1,4 +1,4 @@
-# **Website 2 APK Builder 3.0 Pro**
+# **Website 2 APK Builder 3.3.1 Pro**
 
 # **HTML to APK Converter**
 
@@ -9,9 +9,26 @@
 > Build app from any web server site or from local directory.
 
  **Highlights:**
-- Push Notifications (New)
-- Persistent Cookies (Fixed)
-- App Orientation (Fixed)
+- Bug Fixes**
+- Option to remove JavaScript APIs (In response to JavaScript Interface Injection Vulnerability)
+- Desktop Mode
+- HTTPs Only Mode (In response to JavaScript Interface Injection Vulnerability & Better Security)
+- Debug Mode can now display SSL related errors on your screen)
+- Keep Screen On while playing full screen videos
+- Hide WebView User Agent (Allows login with Google and Many more).
+- Added option to select if you want to overlap new notification to existing or show as new.
+- Added "isBroadcastEnabled" JS API Function
+- Audio recording now working.  
+- GDPR Compliant AdMob Functions
+- Allow or Prevent Screenshot
+- Push Notifications API Access
+- Updated API Level 27
+- Adjust Screen Layout while Typing
+- Custom Keystore
+- Download via Download Manager
+- Push Notifications
+- Persistent Cookies
+- App Orientation
 - New JavaScript APIs 
 - jQuery, Ionic & jQueryMobile support for Offline HTML Apps.
 - App Share Button (Also avaibale with Javascript)
@@ -53,11 +70,10 @@
 - No Back-Links
 - User Friendly
 - Best App Results for Responsive Sites
-- Bug Fixes**
 
 ## **[Download Now!](https://websitetoapk.com/download.html)**
 
-![screenshot1](https://a.fsdn.com/con/app/proj/website2apk/screenshots/Website2APK_v3.0_1.png)
+![screenshot1](https://websitetoapk.com/images/screenshots/v3.3.1_1.png)
 
 **For Updates & More Releases:**
 
