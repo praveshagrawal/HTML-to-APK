@@ -1,6 +1,6 @@
-# **Website 2 APK Builder 4.0 Pro**
-
 # **HTML to APK Converter**
+
+# **Website 2 APK Builder 4.2 Pro**
 
 > Convert your Website or HTML5 app to a working Android App.
 > 
@@ -8,7 +8,16 @@
 > 
 > Build app from any web server site or from local directory.
 
-**What's new in v4.0**
+**What's new in v4.2**
+- Multiple Image Upload Support
+- JS API to get device API Level
+- 7 More color options
+- Unicode character support for Nav Drawer
+- Deep-linking
+- Java 15 support added
+- Bug Fixes**
+
+ **Highlights:**
 - Material Design
 - Change Material Color Scheme
 - Pull-to-Refresh
@@ -16,10 +25,6 @@
 - Live Toolbar Title
 - Material Toolbar
 - Wix Support (Fixed Layout Issue)
-- Bug Fixes**
-
- **Highlights:**
-- Latest API Level 28
 - Better handling for SSL related errors
 - Updated Firebase and AdMob library versions
 - JS API to prevent device from sleeping
@@ -41,7 +46,6 @@
 - GDPR Compliant AdMob Functions
 - Allow or Prevent Screenshot
 - Push Notifications API Access
-- Updated API Level 27
 - Adjust Screen Layout while Typing
 - Custom Keystore
 - Download via Download Manager
@@ -61,16 +65,13 @@
 - Confirm on Exit (Optional to Enable)
 - Build Android Apps easily from your HTML5 or Web Content
 - Create Apps in seconds for your Live Website
-- AdMob Integration
-- Banner Ads
-- Interstitial Ads
+- AdMob Banner & Interstitial Ads
 - Custom Splash screen
 - Custom Package Name
 - Custom Android Permissions
 - Custom Error Pages
 - Google Play Ready Android App
 - Login Session Keeping
-- Supports HTML5
 - Configurable Caching Options
 - Offine HTML5 Video Support
 - File Upload Support
@@ -81,8 +82,6 @@
 - Set App Orientation
 - Zoom Buttons Option
 - About Dialog
-- Custom developer Tagline
-- Centered Progress Wheel
 - Custom Progress Wheel
 - Set Splash Duration
 - Completely Ad-Free
@@ -92,7 +91,7 @@
 
 ## **[Download Now!](https://websitetoapk.com/download.html)**
 
-![screenshot1](https://websitetoapk.com/images/screenshots/v4.0_1.png)
+![screenshot1](https://websitetoapk.com/images/screenshots/v4.2_1.png)
 
 **For Updates & More Releases:**
 
