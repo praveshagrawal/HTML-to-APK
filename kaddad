@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق النقل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        h1, h3 {
+            margin: 0;
+        }
+        #form-feedback {
+            color: #d9534f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>تطبيق النقل</h1>
+    </header>
+    <div id="home-section" class="container">
+        <button onclick="showSection('provider-login')">مقدم خدمة النقل</button>
+        <button onclick="showSection('rider-form')">طالب خدمة النقل</button>
+    </div>
+
+    <div id="provider-login" class="container hidden">
+        <header>
+            <button onclick="showSection('home-section')">العودة إلى الصفحة الرئيسية</button>
+            <button onclick="showSection('provider-registration')">التسجيل كمقدم خدمة</button>
+        </header>
+        <h1>تسجيل الدخول كمقدم خدمة</h1>
+        <form id="login-form">
+            <label for="login-username">اسم المستخدم:</label>
+            <input type="text" id="login-username" name="login-username" required>
+
+            <label for="login-password">كلمة السر:</label>
+            <input type="password" id="login-password" name="login-password" required>
+
+            <button type="submit">تسجيل الدخول</button>
+        </form>
+        <p id="login-feedback" class="hidden"></p>
+    </div>
+
+    <div id="provider-registration" class="container hidden">
+        <header>
+            <button onclick="showSection('provider-login')">العودة إلى تسجيل الدخول</button>
+            <button onclick="showSection('home-section')">العودة إلى الصفحة الرئيسية</button>
+        </header>
+        <h1>تسجيل مقدم خدمة نقل جديد</h1>
+        <form id="registration-form">
+            <label for="username">اسم المستخدم:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="phone">رقم الهاتف:</label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="email">البريد الإلكتروني:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">كلمة السر:</label>
+            <input type="password" id="password" name="password" required>
+
+            <h3>معلومات السائق</h3>
+            <label for="driver-name">اسم السائق:</label>
+            <input type="text" id="driver-name" name="driver-name" required>
+
+            <label for="national-id">رقم الهوية الوطنية:</label>
+            <input type="text" id="national-id" name="national-id" required>
+
+            <label for="license-number">رقم الرخصة:</label>
+            <input type="text" id="license-number" name="license-number" required>
+
+            <h3>معلومات السيارة</h3>
+            <label for="car-type">نوع السيارة:</label>
+            <input type="text" id="car-type" name="car-type" required>
+
+            <label for="car-color">لون السيارة:</label>
+            <input type="text" id="car-color" name="car-color" required>
+
+            <label for="car-number">رقم السيارة:</label>
+            <input type="text" id="car-number" name="car-number" required>
+
+            <label for="registration-number">رقم تسجيل السيارة:</label>
+            <input type="text" id="registration-number" name="registration-number" required>
+
+            <button type="submit">تسجيل</button>
+        </form>
+        <p id="registration-feedback" class="hidden"></p>
+    </div>
+
+    <div id="rider-form" class="container hidden">
+        <header>
+            <button onclick="showSection('home-section')">العودة إلى الصفحة الرئيسية</button>
+            <button onclick="showSection('payment-form')">إجراء الدفع</button>
+        </header>
+        <h1>البحث عن رحلات</h1>
+        <form id="search-form">
+            <label for="departure">مكان الانطلاق:</label>
+            <input type="text" id="departure" name="departure" required>
+
+            <label for="destination">مكان الوصول:</label>
+            <input type="text" id="destination" name="destination" required>
+
+            <label for="date">تاريخ الرحلة:</label>
+            <input type="date" id="date" name="date" required>
+
+            <button type="submit">البحث</button>
+        </form>
+        <p id="search-feedback" class="hidden"></p>
+    </div>
+
+    <div id="payment-form" class="container hidden">
+        <header>
+            <button onclick="showSection('rider-form')">العودة إلى البحث عن الرحلات</button>
+            <button onclick="showSection('home-section')">العودة إلى الصفحة الرئيسية</button>
+        </header>
+        <h1>إجراء الدفع</h1>
+        <form id="payment-form">
+            <label for="card-number">رقم البطاقة:</label>
+            <input type="text" id="card-number" name="card-number" required>
+
+            <label for="expiry-date">تاريخ الانتهاء:</label>
+            <input type="text" id="expiry-date" name="expiry-date" required>
+
+            <label for="cvv">رمز التحقق (CVV):</label>
+            <input type="text" id="cvv" name="cvv" required>
+
+            <button type="submit">إتمام الدفع</button>
+        </form>
+        <p id="payment-feedback" class="hidden"></p>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = ['home-section', 'provider-login', 'provider-registration', 'rider-form', 'payment-form'];
+            sections.forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const data = {
+                username: document.getElementById('login-username').value,
+                password: document.getElementById('login-password').value
+            };
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById('login-feedback').innerText = message;
+                document.getElementById('login-feedback').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('login-feedback').innerText = 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+                document.getElementById('login-feedback').classList.remove('hidden');
+            });
+        });
+
+        document.getElementById('registration-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const data = {
+                username: document.getElementById('username').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                driverInfo: {
+                    name: document.getElementById('driver-name').value,
+                    nationalId: document.getElementById('national-id').value,
+                    licenseNumber: document.getElementById('license-number').value
+                },
+                carInfo: {
+                    type: document.getElementById('car-type').value,
+                    color: document.getElementById('car-color').value,
+                    number: document.getElementById('car-number').value,
+                    registrationNumber: document.getElementById('registration-number').value
+                }
+            };
+
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById('registration-feedback').innerText = message;
+                document.getElementById('registration-feedback').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('registration-feedback').innerText = 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+                document.getElementById('registration-feedback').classList.remove('hidden');
+            });
+        });
+
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const data = {
+                departure: document.getElementById('departure').value,
+                destination: document.getElementById('destination').value,
+                date: document.getElementById('date').value
+            };
+
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById('search-feedback').innerText = message;
+                document.getElementById('search-feedback').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('search-feedback').innerText = 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+                document.getElementById('search-feedback').classList.remove('hidden');
+            });
+        });
+
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const data = {
+                cardNumber: document.getElementById('card-number').value,
+                expiryDate: document.getElementById('expiry-date').value,
+                cvv: document.getElementById('cvv').value
+            };
+
+            fetch('/pay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(message => {
+                document.getElementById('payment-feedback').innerText = message;
+                document.getElementById('payment-feedback').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('payment-feedback').innerText = 'حدث خطأ. يرجى المحاولة مرة أخرى.';
+                document.getElementById('payment-feedback').classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
