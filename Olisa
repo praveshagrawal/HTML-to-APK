@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Respiratory USMLE MCQs (30 Questions)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { background: #f9fafb; font-family: 'Segoe UI', Arial, sans-serif; margin: 0;}
+    .container { max-width: 600px; background: #fff; margin: 40px auto; box-shadow: 0 4px 16px #0001; border-radius: 14px; padding: 32px 24px;}
+    h1 { font-size: 1.6rem; text-align: center; color: #15316d;}
+    .mcq { display: none;}
+    .mcq.active { display: block;}
+    .question { font-size: 1.1rem; margin-bottom: 14px;}
+    .options { list-style: none; padding: 0;}
+    .options li { margin: 12px 0; background: #f2f5fa; border-radius: 7px; padding: 8px 10px;}
+    .options input[type="radio"] { accent-color: #15316d; margin-right: 8px;}
+    .btn { padding: 10px 22px; border: none; border-radius: 6px; background: #15316d; color: #fff; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 18px;}
+    .btn:disabled { background: #bfc7d1; cursor: not-allowed;}
+    .feedback { margin: 14px 0 8px 0; padding: 10px 14px; border-radius: 6px; font-weight: 500;}
+    .correct { background: #e6f8e0; color: #237a3c;}
+    .incorrect { background: #fde8e4; color: #9d1c10;}
+    .explanation { background: #f6f7fa; border-left: 4px solid #67b5ed; padding: 10px 18px; margin-top: 7px; color: #1d2437; border-radius: 5px;}
+    .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 22px;}
+    #counter { color: #48607c; font-size: 1.1rem; font-weight: 500;}
+    @media (max-width: 650px) {.container { padding: 16px 4vw; } h1 { font-size: 1.2rem; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Respiratory USMLE MCQs</h1>
+
+    <!-- MCQ 1 -->
+    <div class="mcq active" data-answer="2">
+      <div class="question">
+        1. A 68-year-old man with a 40-pack-year smoking history presents with chronic productive cough. Spirometry shows decreased FEV1/FVC ratio. What is the most likely diagnosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q1">Restrictive lung disease</label></li>
+        <li><label><input type="radio" name="q1">Pulmonary hypertension</label></li>
+        <li><label><input type="radio" name="q1">Obstructive lung disease</label></li>
+        <li><label><input type="radio" name="q1">Bronchiectasis</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Obstructive diseases (e.g., COPD) decrease the FEV1/FVC ratio, especially in chronic smokers.</div>
+    </div>
+    <!-- MCQ 2 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        2. A V/Q scan in a patient with pulmonary embolism will show:
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q2">Low V/Q ratio in the affected area</label></li>
+        <li><label><input type="radio" name="q2">High V/Q ratio in the affected area</label></li>
+        <li><label><input type="radio" name="q2">Normal V/Q throughout the lung</label></li>
+        <li><label><input type="radio" name="q2">Low V/Q ratio throughout the lung</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Pulmonary embolism causes high V/Q (ventilated but not perfused) in the affected region.</div>
+    </div>
+    <!-- MCQ 3 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        3. Which cell type produces surfactant in the alveoli?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q3">Type I pneumocyte</label></li>
+        <li><label><input type="radio" name="q3">Type II pneumocyte</label></li>
+        <li><label><input type="radio" name="q3">Alveolar macrophage</label></li>
+        <li><label><input type="radio" name="q3">Club cell</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Type II pneumocytes synthesize and secrete pulmonary surfactant.</div>
+    </div>
+    <!-- MCQ 4 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        4. A 24-year-old man develops dyspnea after a stab wound to the chest. On exam, there is decreased breath sounds and hyperresonance. What is the most likely diagnosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q4">Pulmonary embolism</label></li>
+        <li><label><input type="radio" name="q4">Pneumonia</label></li>
+        <li><label><input type="radio" name="q4">Tension pneumothorax</label></li>
+        <li><label><input type="radio" name="q4">Atelectasis</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Tension pneumothorax presents with decreased breath sounds and hyperresonance after chest trauma.</div>
+    </div>
+    <!-- MCQ 5 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        5. A 6-year-old boy presents with barking cough and inspiratory stridor. What is the most likely diagnosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q5">Epiglottitis</label></li>
+        <li><label><input type="radio" name="q5">Bronchiolitis</label></li>
+        <li><label><input type="radio" name="q5">Croup</label></li>
+        <li><label><input type="radio" name="q5">Pertussis</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Croup (laryngotracheobronchitis) presents with a barking cough and inspiratory stridor.</div>
+    </div>
+    <!-- MCQ 6 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        6. Which is a classic finding in restrictive lung disease?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q6">Increased total lung capacity</label></li>
+        <li><label><input type="radio" name="q6">Increased FEV1/FVC ratio</label></li>
+        <li><label><input type="radio" name="q6">Decreased FEV1/FVC ratio</label></li>
+        <li><label><input type="radio" name="q6">Increased residual volume</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Restrictive diseases cause proportionally decreased FEV1 and FVC, so the ratio is normal or increased.</div>
+    </div>
+    <!-- MCQ 7 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        7. Which of the following is the major site of airway resistance?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q7">Alveolar ducts</label></li>
+        <li><label><input type="radio" name="q7">Terminal bronchioles</label></li>
+        <li><label><input type="radio" name="q7">Segmental bronchi</label></li>
+        <li><label><input type="radio" name="q7">Trachea</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Segmental (medium-sized) bronchi provide the most airway resistance due to turbulent flow.</div>
+    </div>
+    <!-- MCQ 8 -->
+    <div class="mcq" data-answer="3">
+      <div class="question">
+        8. A tall, thin young man suddenly develops unilateral chest pain and dyspnea. What is the most likely diagnosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q8">Pulmonary embolism</label></li>
+        <li><label><input type="radio" name="q8">Bronchiectasis</label></li>
+        <li><label><input type="radio" name="q8">Asthma exacerbation</label></li>
+        <li><label><input type="radio" name="q8">Spontaneous pneumothorax</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Spontaneous pneumothorax classically occurs in tall, thin young men.</div>
+    </div>
+    <!-- MCQ 9 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        9. Which occupational exposure increases risk for mesothelioma?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q9">Silica</label></li>
+        <li><label><input type="radio" name="q9">Coal dust</label></li>
+        <li><label><input type="radio" name="q9">Asbestos</label></li>
+        <li><label><input type="radio" name="q9">Beryllium</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Asbestos exposure is strongly linked to mesothelioma.</div>
+    </div>
+    <!-- MCQ 10 -->
+    <div class="mcq" data-answer="3">
+      <div class="question">
+        10. A patient with cystic fibrosis develops pneumonia. Which organism is most likely responsible?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q10">Klebsiella pneumoniae</label></li>
+        <li><label><input type="radio" name="q10">Streptococcus pneumoniae</label></li>
+        <li><label><input type="radio" name="q10">Haemophilus influenzae</label></li>
+        <li><label><input type="radio" name="q10">Pseudomonas aeruginosa</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Pseudomonas is a common and serious pathogen in CF patients.</div>
+    </div>
+    <!-- MCQ 11 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        11. Which lung volume is increased in obstructive lung disease?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q11">Expiratory reserve volume</label></li>
+        <li><label><input type="radio" name="q11">Inspiratory reserve volume</label></li>
+        <li><label><input type="radio" name="q11">Residual volume</label></li>
+        <li><label><input type="radio" name="q11">Vital capacity</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Obstructive diseases cause air trapping, increasing residual volume.</div>
+    </div>
+    <!-- MCQ 12 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        12. Which is the primary driver of increased ventilation at high altitude?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q12">Decreased PaCO2</label></li>
+        <li><label><input type="radio" name="q12">Decreased PaO2</label></li>
+        <li><label><input type="radio" name="q12">Increased PaO2</label></li>
+        <li><label><input type="radio" name="q12">Decreased HCO3-</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Low PaO2 (hypoxemia) stimulates increased ventilation at high altitude.</div>
+    </div>
+    <!-- MCQ 13 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        13. Which histopathological finding is classic for sarcoidosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q13">Caseating granulomas</label></li>
+        <li><label><input type="radio" name="q13">Non-caseating granulomas</label></li>
+        <li><label><input type="radio" name="q13">Hyaline membranes</label></li>
+        <li><label><input type="radio" name="q13">Ferruginous bodies</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Sarcoidosis is characterized by non-caseating granulomas.</div>
+    </div>
+    <!-- MCQ 14 -->
+    <div class="mcq" data-answer="1">
+      <div class="question">
+        14. A patient with asthma uses a rescue inhaler. What is the mechanism of action of the most commonly used agent?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q14">Muscarinic antagonist</label></li>
+        <li><label><input type="radio" name="q14">Beta-2 adrenergic agonist</label></li>
+        <li><label><input type="radio" name="q14">Alpha-1 antagonist</label></li>
+        <li><label><input type="radio" name="q14">Leukotriene receptor antagonist</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
+      <div class="explanation" style="display:none;">Short-acting beta-2 agonists (e.g., albuterol) stimulate bronchial smooth muscle relaxation via cAMP.</div>
+    </div>
+    <!-- MCQ 15 -->
+    <div class="mcq" data-answer="2">
+      <div class="question">
+        15. A patient develops progressive dyspnea and dry cough. Chest X-ray shows reticulonodular pattern. What is the likely diagnosis?
+      </div>
+      <ul class="options">
+        <li><label><input type="radio" name="q15">Pulmonary embolism</label></li>
+        <li><label><input type="radio" name="q15">Emphysema</label></li>
+        <li><label><input type="radio" name="q15">Idiopathic pulmonary fibrosis</label></li>
+        <li><label><input type="radio" name="q15">Asthma</label></li>
+      </ul>
+      <button class="btn submit-btn">Submit</button>
+      <div class="feedback" style="display:none;"></div>
