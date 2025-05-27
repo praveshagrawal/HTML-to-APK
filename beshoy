@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الركض في الشارع مع الأصوات</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script> <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            background-color: #1a1a2e; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            position: relative;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 120px); /* Adjust height for UI */
+            background-color: #333;
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glowing effect */
+        }
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            width: 90%;
+            max-width: 500px; /* Limit width for better mobile display */
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        #score, #high-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #00ffff; /* Cyan color for score */
+        }
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+            z-index: 100;
+            display: flex; /* Changed to flex for centering content */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #00ffff;
+        }
+        #message-box h2 {
+            color: #ff007f; /* Pink color for headings */
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        #message-box p {
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+        }
+        .game-button {
+            background: linear-gradient(45deg, #00ffff, #00aaff); /* Gradient button */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+            margin-top: 10px; /* Spacing for multiple buttons */
+        }
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.6);
+        }
+        #controls-info {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: 500px; /* Limit width for better mobile display */
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        @media (max-width: 768px) {
+            #ui-container, #controls-info {
+                font-size: 0.9em;
+                padding: 8px 15px;
+            }
+            #score, #high-score {
+                font-size: 1.5em;
+            }
+            #message-box h2 {
+                font-size: 2em;
+            }
+            #message-box p {
+                font-size: 1.2em;
+            }
+            .game-button {
+                padding: 12px 25px;
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="ui-container">
+        <div id="score">النقاط: 0</div>
+        <div id="high-score">أعلى نقاط: 0</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="message-box">
+        <h2 id="message-title">لعبة الركض في الشارع</h2>
+        <p id="message-text">اسحب لليسار/لليمين لتغيير المسار، اسحب للأعلى للقفز.</p>
+        <button id="start-button" class="game-button">ابدأ اللعب</button>
+        <button id="restart-button" class="game-button" style="display:none;">إعادة اللعب</button>
+    </div>
+
+    <div id="controls-info">
+        <p><strong>للتحكم:</strong> اسحب لليسار/لليمين لتغيير المسار، اسحب للأعلى للقفز.</p>
+        <p>(أو استخدم مفاتيح الأسهم على لوحة المفاتيح)</p>
+    </div>
+
+    <script type="module">
+        // Global variables for Firebase (will be populated by the Canvas environment)
+        // These are placeholders and will be replaced by the actual values at runtime.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let firebaseApp, auth, db;
+        let userId;
+
+        // Game variables
+        let scene, camera, renderer;
+        let player; // This will now be a THREE.Group for the running woman
+        const lanes = [-2, 0, 2]; // X positions for lanes
+        let currentLane = 1; // Middle lane
+        let playerVelocityY = 0;
+        const gravity = -0.01; // Reduced gravity for a more natural jump
+        const jumpForce = 0.2; // Reduced jump force
+        let isJumping = false;
+        let gameSpeed = 0.15; // Initial game speed
+        let score = 0;
+        let highScore = 0;
+        let gameOver = true; // Game starts in a paused/game over state
+        let obstacles = []; // Will contain car objects
+        let coins = [];
+        const obstacleSpawnInterval = 1000; // milliseconds
+        let lastObstacleSpawnTime = 0;
+        const coinSpawnInterval = 500; // milliseconds
+        let lastCoinSpawnTime = 0;
+        const maxObstacles = 10;
+        const maxCoins = 10;
+        const groundLength = 200; // Length of the ground plane
+        const groundWidth = 8; // Width of the ground plane (for road)
+        let laneMarkings = []; // Array to hold lane marking meshes
+
+        // UI elements
+        const scoreElement = document.getElementById('score');
+        const highScoreElement = document.getElementById('high-score');
+        const messageBox = document.getElementById('message-box');
+        const messageTitle = document.getElementById('message-title');
+        const messageText = document.getElementById('message-text');
+        const finalScore = document.getElementById('final-score');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+
+        // Touch input variables
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        const swipeThreshold = 50; // Minimum distance for a swipe
+
+        // Tone.js audio setup
+        let jumpSynth, coinSynth, collisionSynth, backgroundLoop;
+
+        function setupAudio() {
+            // Jump sound: short, ascending tone
+            jumpSynth = new Tone.Synth({
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.05, release: 0.1 }
+            }).toDestination();
+
+            // Coin sound: short, high-pitched tone
+            coinSynth = new Tone.Synth({
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.005, decay: 0.05, sustain: 0.01, release: 0.05 }
+            }).toDestination();
+
+            // Collision sound: low, noisy burst
+            collisionSynth = new Tone.NoiseSynth({
+                noise: { type: "white" },
+                envelope: { attack: 0.01, decay: 0.2, sustain: 0.0, release: 0.1 }
+            }).toDestination();
+
+            // Background music loop
+            backgroundLoop = new Tone.Loop(time => {
+                // Simple arpeggio for background music
+                jumpSynth.triggerAttackRelease("C4", "8n", time);
+                jumpSynth.triggerAttackRelease("E4", "8n", time + 0.2);
+                jumpSynth.triggerAttackRelease("G4", "8n", time + 0.4);
+                jumpSynth.triggerAttackRelease("C5", "8n", time + 0.6);
+            }, "1.5s").start(0); // Loop every 1.5 seconds, start immediately
+            Tone.Transport.bpm.value = 120; // Set BPM for the transport
+        }
+
+        // Function to initialize Firebase
+        async function initializeFirebase() {
+            try {
+                firebaseApp = initializeApp(firebaseConfig);
+                auth = getAuth(firebaseApp);
+                db = getFirestore(firebaseApp);
+
+                // Authenticate user
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listen for auth state changes to get user ID
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase User ID:", userId);
+                        loadHighScore(); // Load high score once authenticated
+                    } else {
+                        // If no user (shouldn't happen with anonymous sign-in), use a random ID
+                        userId = crypto.randomUUID();
+                        console.log("Anonymous User ID:", userId);
+                        loadHighScore(); // Load high score even for anonymous users
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                // Fallback to local storage if there's an error with Firebase
+                highScore = parseInt(localStorage.getItem('highScore') || '0');
+                highScoreElement.textContent = `أعلى نقاط: ${highScore}`;
+            }
+        }
+
+        // Function to load high score from Firestore
+        async function loadHighScore() {
+            if (!db || !userId) {
+                console.warn("Firestore not ready or user ID not available. Cannot load high score.");
+                // Fallback to local storage if Firestore is not ready
+                highScore = parseInt(localStorage.getItem('highScore') || '0');
+                highScoreElement.textContent = `أعلى نقاط: ${highScore}`;
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/gameData`, 'highScore');
+                const docSnap = await getDoc(userDocRef);
+
+                if (docSnap.exists()) {
+                    highScore = docSnap.data().value || 0;
+                } else {
+                    // If no high score exists, set it to 0 and save it
+                    await setDoc(userDocRef, { value: 0 });
+                    highScore = 0;
+                }
+                highScoreElement.textContent = `أعلى نقاط: ${highScore}`;
+            } catch (error) {
+                console.error("Error loading high score from Firestore:", error);
+                // Fallback to local storage if Firestore fails
+                highScore = parseInt(localStorage.getItem('highScore') || '0');
+                highScoreElement.textContent = `أعلى نقاط: ${highScore}`;
+            }
+        }
+
+        // Function to save high score to Firestore
+        async function saveHighScore() {
+            if (!db || !userId) {
+                console.warn("Firestore not ready or user ID not available. Cannot save high score.");
+                // Fallback to local storage if Firestore is not ready
+                localStorage.setItem('highScore', highScore.toString());
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/gameData`, 'highScore');
+                await setDoc(userDocRef, { value: highScore });
+            } catch (error) {
+                console.error("Error saving high score to Firestore:", error);
+                // Fallback to local storage if Firestore fails
+                localStorage.setItem('highScore', highScore.toString());
+            }
+        }
+
+        // Function to create the running female player model (stylized)
+        function createRunningFemale() {
+            const femaleGroup = new THREE.Group();
+
+            // Body (Torso - slightly more slender)
+            const bodyGeometry = new THREE.BoxGeometry(0.5, 0.8, 0.3);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFFF }); // White dress color
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 0.9;
+
+            // Head (slightly smaller sphere)
+            const headGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+            const headMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac }); // Skin color
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = 1.5;
+
+            // Arms (more slender)
+            const armGeometry = new THREE.BoxGeometry(0.15, 0.6, 0.15);
+            const armMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFFF }); // White dress color
+            const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+            leftArm.position.set(-0.35, 0.9, 0);
+            const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+            rightArm.position.set(0.35, 0.9, 0);
+
+            // Legs (more slender)
+            const legGeometry = new THREE.BoxGeometry(0.2, 0.9, 0.2);
+            const legMaterial = new THREE.MeshLambertMaterial({ color: 0x000080 }); // Darker for pants/skirt bottom
+            const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+            leftLeg.position.set(-0.1, 0.45, 0);
+            const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+            rightLeg.position.set(0.1, 0.45, 0);
+
+            femaleGroup.add(body);
+            femaleGroup.add(head);
+            femaleGroup.add(leftArm);
+            femaleGroup.add(rightArm);
+            femaleGroup.add(leftLeg);
+            femaleGroup.add(rightLeg);
+
+            femaleGroup.position.set(lanes[currentLane], 0, 0);
+            return femaleGroup;
+        }
+
+        // Function to create a more realistic car obstacle
+        function createCarObstacle() {
+            const carColors = [0x0000ff, 0xff0000, 0x00ff00, 0xffff00, 0x800080, 0xffa500, 0x808080, 0x00ffff]; // Various car colors
+
+            const bodyWidth = 1.6;
+            const bodyHeight = 0.6;
+            const bodyDepth = 3.5;
+
+            const carGroup = new THREE.Group();
+            const chosenColor = carColors[Math.floor(Math.random() * carColors.length)];
+
+            // Car Body (main chassis)
+            const carBodyGeometry = new THREE.BoxGeometry(bodyWidth, bodyHeight, bodyDepth);
+            const carBodyMaterial = new THREE.MeshLambertMaterial({ color: chosenColor });
+            const carBody = new THREE.Mesh(carBodyGeometry, carBodyMaterial);
+            carBody.position.y = bodyHeight / 2 + 0.1; // Slightly above ground for wheels
+            carGroup.add(carBody);
+
+            // Car Cabin (top part)
+            const cabinWidth = bodyWidth * 0.8;
+            const cabinHeight = bodyHeight * 0.8;
+            const cabinDepth = bodyDepth * 0.6;
+            const cabinGeometry = new THREE.BoxGeometry(cabinWidth, cabinHeight, cabinDepth);
+            const cabinMaterial = new THREE.MeshLambertMaterial({ color: chosenColor * 0.8 }); // Slightly darker shade
+            const cabin = new THREE.Mesh(cabinGeometry, cabinMaterial);
+            cabin.position.y = bodyHeight + cabinHeight / 2 + 0.1; // On top of the main body
+            cabin.position.z = bodyDepth / 2 - cabinDepth / 2 - 0.2; // Position towards the front
+            carGroup.add(cabin);
+
+            // Wheels
+            const wheelRadius = 0.3;
+            const wheelThickness = 0.2;
+            const wheelGeometry = new THREE.CylinderGeometry(wheelRadius, wheelRadius, wheelThickness, 16);
+            const wheelMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 }); // Dark grey for wheels
+
+            const wheelOffsetZ = bodyDepth / 2 - wheelRadius - 0.1; // Offset from front/back
+            const wheelOffsetX = bodyWidth / 2 + wheelThickness / 2; // Offset from sides
+
+            const frontLeftWheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            frontLeftWheel.rotation.x = Math.PI / 2;
+            frontLeftWheel.position.set(-wheelOffsetX, wheelRadius, wheelOffsetZ);
+            carGroup.add(frontLeftWheel);
+
+            const frontRightWheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            frontRightWheel.rotation.x = Math.PI / 2;
+            frontRightWheel.position.set(wheelOffsetX, wheelRadius, wheelOffsetZ);
+            carGroup.add(frontRightWheel);
+
+            const backLeftWheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            backLeftWheel.rotation.x = Math.PI / 2;
+            backLeftWheel.position.set(-wheelOffsetX, wheelRadius, -wheelOffsetZ);
+            carGroup.add(backLeftWheel);
+
+            const backRightWheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+            backRightWheel.rotation.x = Math.PI / 2;
+            backRightWheel.position.set(wheelOffsetX, wheelRadius, -wheelOffsetZ);
+            carGroup.add(backRightWheel);
+
+            // Position the car far in front, at ground level
+            carGroup.position.set(lanes[Math.floor(Math.random() * lanes.length)], 0, -groundLength / 2);
+            return carGroup;
+        }
+
+        // Initialize Three.js scene
+        function init() {
+            const canvas = document.getElementById('gameCanvas');
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x505050); // Darker grey for overall scene
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / (window.innerHeight - 120), 0.1, 1000);
+            camera.position.set(0, 4, 8); // Position behind and above the player
+            camera.lookAt(0, 1, 0); // Look towards the origin where player starts
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight - 120);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(0, 10, 5);
+            scene.add(directionalLight);
+
+            // Road (Ground)
+            const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x444444 }); // Dark asphalt color
+            const roadGeometry = new THREE.PlaneGeometry(groundWidth, groundLength);
+            const road = new THREE.Mesh(roadGeometry, roadMaterial);
+            road.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+            road.position.z = -groundLength / 2 + camera.position.z; // Position the road in front of the camera
+            scene.add(road);
+
+            // Lane markings
+            const laneMarkingMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // White for markings
+            const laneMarkingGeometry = new THREE.BoxGeometry(0.1, 0.05, 2); // Thin, flat, and long marking segment
+            const numMarkings = Math.floor(groundLength / 4); // Number of marking segments to cover the ground
+
+            for (let i = 0; i < numMarkings; i++) {
+                // Left lane marking (between lane 0 and 1)
+                const leftMarking = new THREE.Mesh(laneMarkingGeometry, laneMarkingMaterial);
+                leftMarking.position.set(lanes[0] + 1, -0.02, -groundLength / 2 + i * 4);
+                scene.add(leftMarking);
+                laneMarkings.push(leftMarking);
+
+                // Right lane marking (between lane 1 and 2)
+                const rightMarking = new THREE.Mesh(laneMarkingGeometry, laneMarkingMaterial);
+                rightMarking.position.set(lanes[2] - 1, -0.02, -groundLength / 2 + i * 4);
+                scene.add(rightMarking);
+                laneMarkings.push(rightMarking);
+            }
+
+            // Player (Running Female)
+            player = createRunningFemale();
+            scene.add(player);
+
+            // Resize handler
+            window.addEventListener('resize', onWindowResize, false);
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / (window.innerHeight - 120);
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight - 120);
+            }
+
+            // Input handlers
+            document.addEventListener('keydown', onKeyDown);
+            canvas.addEventListener('touchstart', onTouchStart, false);
+            canvas.addEventListener('touchend', onTouchEnd, false);
+        }
+
+        // Game state reset
+        function resetGame() {
+            // Clear existing obstacles and coins from scene
+            obstacles.forEach(obj => scene.remove(obj));
+            coins.forEach(obj => scene.remove(obj));
+            obstacles = [];
+            coins = [];
+
+            // Reset player position
+            player.position.set(lanes[1], 0, 0); // Player Y is 0 when on ground
+            currentLane = 1;
+            playerVelocityY = 0;
+            isJumping = false;
+
+            // Reset game variables
+            gameSpeed = 0.15;
+            score = 0;
+            gameOver = false;
+            lastObstacleSpawnTime = 0;
+            lastCoinSpawnTime = 0;
+
+            // Update UI
+            scoreElement.textContent = `النقاط: ${score}`;
+            messageBox.style.display = 'none';
+            startButton.style.display = 'none';
+            restartButton.style.display = 'block';
+        }
+
+        // Keyboard input
+        function onKeyDown(event) {
+            if (gameOver) return;
+
+            switch (event.key) {
+                case 'ArrowLeft':
+                    movePlayer(-1);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1);
+                    break;
+                case 'ArrowUp':
+                    jumpPlayer();
+                    break;
+            }
+        }
+
+        // Touch input
+        function onTouchStart(event) {
+            if (gameOver) return;
+            touchStartX = event.changedTouches[0].screenX;
+            touchStartY = event.changedTouches[0].screenY;
+        }
+
+        function onTouchEnd(event) {
+            if (gameOver) return;
+            touchEndX = event.changedTouches[0].screenX;
+            touchEndY = event.changedTouches[0].screenY;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            const dx = touchEndX - touchStartX;
+            const dy = touchEndY - touchStartY;
+
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > swipeThreshold) {
+                // Horizontal swipe
+                if (dx > 0) {
+                    movePlayer(1); // Swipe right
+                } else {
+                    movePlayer(-1); // Swipe left
+                }
+            } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > swipeThreshold) {
+                // Vertical swipe
+                if (dy < 0) {
+                    jumpPlayer(); // Swipe up
+                }
+            }
+        }
+
+        // Player movement
+        function movePlayer(direction) {
+            // -1 for left, 1 for right
+            const newLaneIndex = currentLane + direction;
+            if (newLaneIndex >= 0 && newLaneIndex < lanes.length) {
+                currentLane = newLaneIndex;
+                player.position.x = lanes[currentLane];
+            }
+        }
+
+        function jumpPlayer() {
+            if (!isJumping) {
+                playerVelocityY = jumpForce;
+                isJumping = true;
+                jumpSynth.triggerAttackRelease("C5", "8n"); // Play jump sound
+            }
+        }
+
+        // Generate obstacles (cars)
+        function generateObstacle() {
+            if (obstacles.length >= maxObstacles) return;
+
+            const obstacle = createCarObstacle();
+            scene.add(obstacle);
+            obstacles.push(obstacle);
+        }
+
+        // Generate coins
+        function generateCoin() {
+            if (coins.length >= maxCoins) return;
+
+            const coinGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.1, 16);
+            const coinMaterial = new THREE.MeshLambertMaterial({ color: 0xffff00 }); // Yellow coins
+            const coin = new THREE.Mesh(coinGeometry, coinMaterial);
+
+            const laneIndex = Math.floor(Math.random() * lanes.length);
+            coin.position.set(lanes[laneIndex], 0.5, -groundLength / 2); // Far in front, slightly above ground
+            coin.rotation.x = Math.PI / 2; // Make it stand upright
+            scene.add(coin);
+            coins.push(coin);
+        }
+
+        // Game loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (gameOver) {
+                renderer.render(scene, camera);
+                return;
+            }
+
+            // Update player vertical position (jump/fall)
+            player.position.y += playerVelocityY;
+            playerVelocityY += gravity;
+
+            // Prevent player from falling through the ground
+            if (player.position.y < 0) { // Player's base is at Y=0 when on ground
+                player.position.y = 0;
+                playerVelocityY = 0;
+                isJumping = false;
+            }
+
+            // Move lane markings
+            laneMarkings.forEach(marking => {
+                marking.position.z += gameSpeed;
+                // Loop markings when they go off screen
+                if (marking.position.z > camera.position.z + 2) {
+                    marking.position.z -= groundLength; // Move back to the start of the ground
+                }
+            });
+
+
+            // Move obstacles (cars)
+            obstacles.forEach((obstacle, index) => {
+                obstacle.position.z += gameSpeed; // Move towards camera
+
+                // Remove obstacles that are behind the camera
+                if (obstacle.position.z > camera.position.z + 5) { // Increased buffer for cars
+                    scene.remove(obstacle);
+                    obstacles.splice(index, 1);
+                }
+
+                // Collision detection with player
+                const playerBox = new THREE.Box3().setFromObject(player);
+                const obstacleBox = new THREE.Box3().setFromObject(obstacle);
+
+                if (playerBox.intersectsBox(obstacleBox)) {
+                    // Get the height of the car body (first child of the car group)
+                    // The car body is the first mesh added to the carGroup
+                    const carBodyMesh = obstacle.children.find(child => child.geometry instanceof THREE.BoxGeometry && child.geometry.parameters.height > 0.5);
+                    const carBodyHeight = carBodyMesh ? carBodyMesh.geometry.parameters.height : 0;
+
+                    // Check if player's lowest point (player.position.y) is below the car's top
+                    // Assuming car's base is at Y=0, its top is at carBodyHeight + 0.1 (from createCarObstacle)
+                    if (player.position.y < carBodyHeight + 0.1) {
+                        endGame();
+                    }
+                }
+            });
+
+            // Move coins
+            coins.forEach((coin, index) => {
+                coin.position.z += gameSpeed; // Move towards camera
+                coin.rotation.y += 0.05; // Spin the coin
+
+                // Remove coins that are behind the camera
+                if (coin.position.z > camera.position.z + 2) {
+                    scene.remove(coin);
+                    coins.splice(index, 1);
+                }
+
+                // Collision detection with player (for collecting)
+                const playerBox = new THREE.Box3().setFromObject(player);
+                const coinBox = new THREE.Box3().setFromObject(coin);
+
+                if (playerBox.intersectsBox(coinBox)) {
+                    scene.remove(coin);
+                    coins.splice(index, 1);
+                    score += 10; // Increase score for collecting coin
+                    scoreElement.textContent = `النقاط: ${score}`;
+                    coinSynth.triggerAttackRelease("E6", "16n"); // Play coin sound
+                }
+            });
+
+            // Spawn new obstacles
+            const currentTime = performance.now();
+            if (currentTime - lastObstacleSpawnTime > obstacleSpawnInterval / gameSpeed) { // Faster spawning with higher speed
+                generateObstacle();
+                lastObstacleSpawnTime = currentTime;
+            }
+
+            // Spawn new coins
+            if (currentTime - lastCoinSpawnTime > coinSpawnInterval / gameSpeed) {
+                generateCoin();
+                lastCoinSpawnTime = currentTime;
+            }
+
+            // Increase game speed over time
+            gameSpeed += 0.00005; // Gradually increase speed for excitement
+
+            // Update score based on distance (time)
+            score += Math.floor(gameSpeed * 10); // Score increases faster with speed
+            scoreElement.textContent = `النقاط: ${score}`;
+
+            renderer.render(scene, camera);
+        }
+
+        // Game over logic
+        function endGame() {
+            gameOver = true;
+            collisionSynth.triggerAttackRelease("C2", "0.5"); // Play collision sound
+            Tone.Transport.stop(); // Stop background music
+            backgroundLoop.stop();
+
+            if (score > highScore) {
+                highScore = score;
+                saveHighScore(); // Save new high score
+                highScoreElement.textContent = `أعلى نقاط: ${highScore}`;
+                messageTitle.textContent = "رقم قياسي جديد!";
+                messageText.textContent = `تهانينا! لقد حققت رقمًا قياسيًا جديدًا: ${score}`;
+            } else {
+                messageTitle.textContent = "انتهت اللعبة!";
+                messageText.textContent = `لقد حصلت على نقاط: ${score}`;
+            }
+            finalScore.textContent = score;
+            messageBox.style.display = 'flex'; // Show message box
+            startButton.style.display = 'none'; // Hide start button
+            restartButton.style.display = 'block'; // Show restart button
+        }
+
+        // Start game functionality
+        startButton.addEventListener('click', async () => {
+            await Tone.start(); // Start Tone.js audio context
+            setupAudio(); // Setup synths and background loop
+            Tone.Transport.start(); // Start Tone.js transport for background music
+            resetGame();
+            animate(); // Start animation loop
+        });
+
+        // Restart button functionality
+        restartButton.addEventListener('click', () => {
+            Tone.Transport.stop(); // Stop current background music
+            backgroundLoop.stop();
+            setupAudio(); // Re-setup synths and background loop
+            Tone.Transport.start(); // Start Tone.js transport for background music
+            resetGame();
+            animate(); // Restart animation loop
+        });
+
+        // Initialize Firebase and then the game
+        window.onload = async function () {
+            await initializeFirebase(); // Initialize Firebase first
+            init(); // Initialize Three.js scene
+            renderer.render(scene, camera); // Render initial scene before game starts
+        };
+    </script>
+</body>
+</html>
+
