@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOHKIR OVERSEAS COMMUNITY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #007BFF;
+            --secondary: #28A745;
+            --tertiary: #6f42c1;
+            --background: #F8F9FA;
+            --text: #212529;
+            --light-gray: #f1f3f5;
+            --dark-gray: #495057;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px 20px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-section {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .dashboard {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(0,123,255,0.25);
+            outline: none;
+        }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            min-width: 1000px;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        table tr:hover {
+            background-color: rgba(0,123,255,0.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal:not(.hidden) .modal-content {
+            transform: scale(1);
+        }
+
+        .payment-status {
+            padding: 10px 14px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 8px 0;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .paid { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #2e7d32; }
+        .pending { background: #ffecb3; color: #ff6f00; border-left: 4px solid #ff6f00; }
+        .loan-payment { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+
+        .hidden { display: none; }
+        .text-center { text-align: center; }
+        .logout-btn { 
+            float: right; 
+            background: var(--danger);
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .toolbar { 
+            margin-bottom: 25px; 
+            display: flex; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            background: linear-gradient(to right, var(--primary), var(--secondary)); 
+            padding: 12px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .toolbar button, .toolbar .dropdown {
+            flex: 1;
+            min-width: 140px;
+        }
+        .toolbar button {
+            background: white;
+            color: var(--text);
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+            font-weight: 600;
+            padding: 12px;
+        }
+        .toolbar button:hover {
+            background: #218838;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .payment-edit-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            max-height: 500px; 
+            overflow-y: auto; 
+            padding: 15px 0; 
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 100%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            z-index: 10;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            text-align: left;
+            background: white;
+            color: var(--text);
+            border: none;
+            padding: 14px;
+            border-radius: 0;
+            margin: 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-content button:hover {
+            background: #f1f1f1;
+        }
+
+        .search-box {
+            margin-bottom: 25px;
+            padding: 14px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .executive-section {
+            margin-top: 30px;
+        }
+
+        .executive-table {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .member-dropdown {
+            position: relative;
+        }
+
+        .member-dropdown-list {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 10;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .member-dropdown-list div {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .member-dropdown-list div:hover {
+            background: #e6f7ff;
+        }
+
+        .loan-section {
+            margin-top: 30px;
+        }
+
+        .loan-form {
+            margin-bottom: 25px;
+            padding: 25px;
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-weight: 600;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 18px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-card .secondary {
+            color: var(--secondary);
+        }
+        
+        .stat-card .tertiary {
+            color: var(--tertiary);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1200px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section-title {
+            font-size: 22px;
+            margin: 30px 0 20px;
+            color: var(--primary);
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f3f5;
+        }
+        
+        .history-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-details {
+            flex: 1;
+        }
+        
+        .history-amount {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .paid-amount {
+            color: var(--success);
+        }
+        
+        .loan-amount {
+            color: var(--tertiary);
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-tertiary {
+            background: var(--tertiary);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .flex-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark-gray);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab:hover:not(.active) {
+            background: #f1f3f5;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .loan-history-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-section,
+            .dashboard {
+                padding: 25px;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .toolbar button, .toolbar .dropdown {
+                width: 100%;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .loan-history-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="authSection" class="auth-section">
+            <div class="header">
+                <h1>GOHKIR OVERSEAS COMMUNITY</h1>
+                <div id="currentDate"></div>
+            </div>
+            <div class="toolbar">
+                <button onclick="showLoginSection('loginFormSection')">Members Login</button>
+                <button onclick="showLoginSection('executiveBodyLoginSection')">Executive Body</button>
+                <button onclick="showLoginSection('loansLoginSection')">Members Loans</button>
+            </div>
+            <div id="loginFormSection">
+                <h2>Member Login</h2>
+                <input type="text" id="loginInput" placeholder="Enter ID, Mobile Number, or Membership Number">
+                <button onclick="handleLogin()">Login</button>
+                <div class="stats-grid mt-20">
+                    <div class="stat-card">
+                        <h3>Total Members</h3>
+                        <div class="value" id="totalMembers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Contributions</h3>
+                        <div class="value secondary">SR <span id="totalReceived">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Loans</h3>
+                        <div class="value">SR <span id="totalLoans">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Cash in Hand</h3>
+                        <div class="value tertiary">SR <span id="cashInHand">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="executiveBodyLoginSection" class="hidden">
+                <div class="executive-section">
+                    <h3>Executive Body</h3>
+                    <table class="executive-table">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                            </tr>
+                        </thead>
+                        <tbody id="executiveBodyLogin"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="loansLoginSection" class="hidden">
+                <div class="loan-section">
+                    <h3>Members Loans</h3>
+                    <table class="executive-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Total Loan (SR)</th>
+                                <th>Loans</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loansBodyLogin"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="file" id="restoreBackupLogin" hidden accept=".json" onchange="restoreBackup(event)">
+                <button onclick="document.getElementById('restoreBackupLogin').click()">Restore Backup</button>
+            </div>
+        </div>
+
+        <div id="adminDashboard" class="dashboard hidden">
+            <div class="header">
+                <h1>GOHKIR OVERSEAS COMMUNITY</h1>
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="showSection('membersSection')">Members List</div>
+                <div class="tab" onclick="showSection('memberForm')">Add Member</div>
+                <div class="tab" onclick="showSection('executiveSection')">Executive Body</div>
+                <div class="tab" onclick="showSection('loanSection')">Members Loans</div>
+                <div class="tab" onclick="showSection('statsSection')">Statistics</div>
+            </div>
+            
+            <div class="toolbar">
+                <div class="dropdown">
+                    <button>Import/Export ▼</button>
+                    <div class="dropdown-content">
+                        <input type="file" id="excelUpload" hidden accept=".xlsx" onchange="handleExcelUpload(event)">
+                        <button onclick="document.getElementById('excelUpload').click()">Import Excel</button>
+                        <button onclick="exportToExcel()">Export Data</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button>Backup ▼</button>
+                    <div class="dropdown-content">
+                        <button onclick="createBackup()">Create Backup</button>
+                        <input type="file" id="restoreBackup" hidden accept=".json" onchange="restoreBackup(event)">
+                        <button onclick="document.getElementById('restoreBackup').click()">Restore Backup</button>
+                    </div>
+                </div>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+
+            <div id="membersSection" class="tab-content active">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search members by name, mobile, iqama, or membership..." onkeyup="searchMembers()">
+                <div class="table-wrapper">
+                    <table id="membersTable">
+                        <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>Membership No</th>
+                                <th>Name</th>
+                                <th>Father's Name</th>
+                                <th>Contact</th>
+                                <th>Iqama</th>
+                                <th>Total Contributions</th>
+                                <th>Last Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="memberForm" class="tab-content">
+                <h3>New Member Registration</h3>
+                <div class="form-group">
+                    <label>Member Type:</label>
+                    <select id="memberType" onchange="toggleMemberFields()">
+                        <option value="new">New Member</option>
+                        <option value="existing">Existing Member</option>
+                    </select>
+                </div>
+                <div id="newMemberFields">
+                    <div class="form-group">
+                        <input type="text" id="newName" placeholder="Full Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newFatherName" placeholder="Father's Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newContact" placeholder="Contact Number">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newIqama" placeholder="Iqama Number">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newOverseasAddress" placeholder="Overseas Address">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newPakistanAddress" placeholder="Pakistan Address">
+                    </div>
+                </div>
+                <div id="existingMemberFields" class="hidden">
+                    <div class="form-group">
+                        <div class="member-dropdown">
+                            <input type="text" id="existingMemberName" placeholder="Select Member" oninput="showMemberDropdown(this, 'member')" onclick="showMemberDropdown(this, 'member')">
+                            <div class="member-dropdown-list" id="memberDropdown"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="existingMemberContact" placeholder="Contact Number" readonly>
+                    </div>
+                </div>
+                <div class="flex-buttons">
+                    <button onclick="saveMember()">Save Member</button>
+                    <button onclick="showSection('membersSection')" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+
+            <div id="executiveSection" class="tab-content">
+                <h3>Executive Body Members</h3>
+                <table class="executive-table">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="executiveBody"></tbody>
+                </table>
+            </div>
+
+            <div id="loanSection" class="tab-content">
+                <h3>Members Loans</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Contributions</h3>
+                        <div class="value secondary">SR <span id="totalContributionsLoan">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Loans</h3>
+                        <div class="value">SR <span id="totalLoansAdmin">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Cash in Hand</h3>
+                        <div class="value tertiary">SR <span id="cashInHandAdmin">0</span></div>
+                    </div>
+                </div>
+                <button onclick="toggleLoanForm()" class="btn-tertiary">Add Loan</button>
+                <div id="loanForm" class="loan-form hidden">
+                    <h4>Add New Loan</h4>
+                    <div class="form-group">
+                        <label>Member Type:</label>
+                        <select id="loanMemberType" onchange="toggleLoanMemberFields()">
+                            <option value="existing">Existing Member</option>
+                            <option value="new">New Member</option>
+                        </select>
+                    </div>
+                    <div id="existingLoanMemberFields">
+                        <div class="form-group">
+                            <div class="member-dropdown">
+                                <input type="text" id="loanMemberName" placeholder="Select Member" oninput="showLoanMemberDropdown(this)" onclick="showLoanMemberDropdown(this)">
+                                <div class="member-dropdown-list" id="loanMemberDropdown"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="loanMemberContact" placeholder="Contact Number" readonly>
+                        </div>
+                    </div>
+                    <div id="newLoanMemberFields" class="hidden">
+                        <div class="form-group">
+                            <input type="text" id="loanNewName" placeholder="Full Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="loanNewContact" placeholder="Contact Number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="loanAmount" placeholder="Loan Amount (SR)" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Period (Days):</label>
+                        <input type="number" id="loanPeriod" min="1" max="120" step="1" placeholder="Enter days (1-120)">
+                    </div>
+                    <div class="flex-buttons">
+                        <button onclick="saveLoan()">Save Loan</button>
+                        <button onclick="toggleLoanForm()" class="btn-secondary">Cancel</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="loansTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Total Loan (SR)</th>
+                                <th>Remaining (SR)</th>
+                                <th>Return Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loansBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="statsSection" class="tab-content">
+                <h3>Financial Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Contributions</h3>
+                        <div class="value secondary">SR <span id="statsTotalContributions">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Loans</h3>
+                        <div class="value">SR <span id="statsTotalLoans">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Cash in Hand</h3>
+                        <div class="value tertiary">SR <span id="statsCashInHand">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4 class="card-title">Contributions Distribution</h4>
+                    <div class="chart-container">
+                        <canvas id="contributionsChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4 class="card-title">Loan Status</h4>
+                    <div class="chart-container">
+                        <canvas id="loansChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="memberDashboard" class="dashboard hidden">
+            <div class="header">
+                <h1>GOHKIR OVERSEAS COMMUNITY</h1>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+            <h2>Member Profile</h2>
+            <div id="memberProfile" class="profile-grid">
+                <div class="card">
+                    <h4 class="card-title">Personal Information</h4>
+                    <div id="memberPersonalInfo"></div>
+                </div>
+                <div class="card">
+                    <h4 class="card-title">Financial Summary</h4>
+                    <div id="memberFinancialInfo"></div>
+                </div>
+            </div>
+            
+            <div class="section-title">Payment History</div>
+            <div id="paymentHistory" class="mt-20"></div>
+            
+            <div class="section-title">Loan History</div>
+            <div id="loanHistory" class="mt-20"></div>
+        </div>
+
+        <div id="loanMemberDashboard" class="dashboard hidden">
+            <div class="header">
+                <h1>GOHKIR OVERSEAS COMMUNITY</h1>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </div>
+            <h2>Loan Member Profile</h2>
+            <div id="loanMemberProfile" class="profile-grid">
+                <div class="card">
+                    <h4 class="card-title">Personal Information</h4>
+                    <div id="loanMemberPersonalInfo"></div>
+                </div>
+                <div class="card">
+                    <h4 class="card-title">Loan Summary</h4>
+                    <div id="loanMemberFinancialInfo"></div>
+                </div>
+            </div>
+            
+            <div class="section-title">Loan Payment History</div>
+            <div id="loanMemberHistory" class="mt-20"></div>
+        </div>
+
+        <div id="editModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Edit Member Details</h3>
+                <div class="form-group">
+                    <input type="text" id="editMembershipNo" readonly placeholder="Membership Number">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editName" placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editFatherName" placeholder="Father's Name">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editContact" placeholder="Contact Number">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editIqama" placeholder="Iqama Number">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editOverseasAddress" placeholder="Overseas Address">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="editPakistanAddress" placeholder="Pakistan Address">
+                </div>
+                <div class="flex-buttons">
+                    <button onclick="saveEdit()">Save Changes</button>
+                    <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Record Payment</h3>
+                <div class="form-group">
+                    <label>Month Due:</label>
+                    <input type="text" id="paymentMonth" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Amount (SR):</label>
+                    <input type="number" id="paymentAmount" min="0" value="100">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method:</label>
+                    <select id="paymentMethod">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank</option>
+                    </select>
+                </div>
+                <div class="flex-buttons">
+                    <button onclick="savePayment()">Record Payment</button>
+                    <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentEditModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Edit Payment History</h3>
+                <div class="payment-edit-grid" id="paymentEditFields"></div>
+                <div class="flex-buttons">
+                    <button onclick="savePaymentEdits()">Save Changes</button>
+                    <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loanPaymentModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Record Loan Payment</h3>
+                <div class="form-group">
+                    <label>Loan Amount Remaining (SR):</label>
+                    <input type="number" id="loanRemaining" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Payment Amount (SR):</label>
+                    <input type="number" id="loanPaymentAmount" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Payment Date:</label>
+                    <input type="date" id="loanPaymentDate">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method:</label>
+                    <select id="loanPaymentMethod">
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank</option>
+                    </select>
+                </div>
+                <div class="flex-buttons">
+                    <button onclick="saveLoanPayment()">Record Payment</button>
+                    <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="editLoanModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Edit Loan</h3>
+                <div class="form-group">
+                    <label>Loan Amount (SR):</label>
+                    <input type="number" id="editLoanAmount" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Loan Period (Days):</label>
+                    <input type="number" id="editLoanPeriod" min="1" max="120" step="1" placeholder="Enter days (1-120)">
+                </div>
+                <div class="flex-buttons">
+                    <button onclick="saveLoanEdit()">Save Changes</button>
+                    <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loanPaymentHistoryModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Loan Payment History</h3>
+                <div id="loanPaymentHistoryContent"></div>
+                <div class="flex-buttons">
+                    <button onclick="closeModal()" class="btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const ADMIN_CONTACT = '03469066955';
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const EXECUTIVE_ROLES = [
+    'President',
+    'Vice President',
+    'General Secretary',
+    'Finance Secretary',
+    'Press/Information Secretary',
+    'Office/Coordination Secretary'
+];
+
+// Initialize data from localStorage or defaults
+let members = JSON.parse(localStorage.getItem('members')) || [];
+let executiveMembers = JSON.parse(localStorage.getItem('executiveMembers')) || {};
+let loans = JSON.parse(localStorage.getItem('loans')) || [];
+let loanMembers = JSON.parse(localStorage.getItem('loanMembers')) || [];
+let selectedMemberIndex = null;
+let selectedLoanIndex = null;
+
+// Initialize membership numbers
+members.forEach((member, index) => {
+    if (!member.membershipNo) {
+        member.membershipNo = `GOC-${String(index + 1).padStart(4, '0')}`;
+    } else {
+        member.membershipNo = `GOC-${member.membershipNo.split('-')[1]}`;
+    }
+    
+    // Initialize payments if not present
+    if (!member.payments) {
+        member.payments = {};
+    }
+});
+
+// Initialize loans with payment history if not present
+loans.forEach(loan => {
+    if (!loan.payments) {
+        loan.payments = [];
+    }
+    if (typeof loan.remaining === 'undefined') {
+        loan.remaining = loan.amount;
+    }
+});
+
+// Save initialized data
+localStorage.setItem('members', JSON.stringify(members));
+localStorage.setItem('loans', JSON.stringify(loans));
+
+// Set current date
+document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+});
+
+// Helper function to calculate return date
+function calculateReturnDate(date, days) {
+    const loanDate = new Date(date);
+    loanDate.setDate(loanDate.getDate() + parseInt(days));
+    return loanDate.toLocaleDateString();
+}
+
+// Handle login function
+function handleLogin() {
+    const input = document.getElementById('loginInput').value.trim();
+    if (input === ADMIN_CONTACT) {
+        showAdminDashboard();
+        return;
+    }
+    
+    const member = members.find(m => m.contact === input || m.iqama === input || m.membershipNo === input);
+    if (member) {
+        showMemberDashboard(member);
+        return;
+    }
+    
+    const loanMember = loanMembers.find(m => m.contact === input);
+    if (loanMember) {
+        showLoanMemberDashboard(loanMember);
+        return;
+    }
+    
+    alert('Member not found. Please check credentials.');
+}
+
+// Show different sections
+function showSection(sectionId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Show the requested section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Update tab states
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Set the active tab
+    document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.textContent.includes('Members List') && sectionId === 'membersSection') {
+            tab.classList.add('active');
+        } else if (tab.textContent.includes('Add Member') && sectionId === 'memberForm') {
+            tab.classList.add('active');
+        } else if (tab.textContent.includes('Executive Body') && sectionId === 'executiveSection') {
+            tab.classList.add('active');
+        } else if (tab.textContent.includes('Members Loans') && sectionId === 'loanSection') {
+            tab.classList.add('active');
+        } else if (tab.textContent.includes('Statistics') && sectionId === 'statsSection') {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Special handling for stats section
+    if (sectionId === 'statsSection') {
+        renderCharts();
+    }
+}
+
+// Show login sections
+function showLoginSection(sectionId) {
+    const sections = ['loginFormSection', 'executiveBodyLoginSection', 'loansLoginSection'];
+    sections.forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+    document.getElementById(sectionId).classList.remove('hidden');
+}
+
+// Toggle member fields based on selection
+function toggleMemberFields() {
+    const memberType = document.getElementById('memberType').value;
+    document.getElementById('newMemberFields').classList.toggle('hidden', memberType !== 'new');
+    document.getElementById('existingMemberFields').classList.toggle('hidden', memberType !== 'existing');
+}
+
+// Toggle loan member fields
+function toggleLoanMemberFields() {
+    const memberType = document.getElementById('loanMemberType').value;
+    document.getElementById('existingLoanMemberFields').classList.toggle('hidden', memberType !== 'existing');
+    document.getElementById('newLoanMemberFields').classList.toggle('hidden', memberType !== 'new');
+}
+
+// Get members with loans
+function getMembersWithLoans() {
+    const loanContacts = new Set(loans.filter(loan => loan.isExistingMember && !loan.isDeleted && loan.remaining > 0).map(loan => loan.contact));
+    return members.filter(member => loanContacts.has(member.contact));
+}
+
+// Save member function
+function saveMember() {
+    const memberType = document.getElementById('memberType').value;
+    let newMember;
+
+    if (memberType === 'existing') {
+        const name = document.getElementById('existingMemberName').value.trim();
+        const contact = document.getElementById('existingMemberContact').value.trim();
+        if (!name || !contact) {
+            alert('Please select an existing member');
+            return;
+        }
+        const existingMember = members.find(m => m.name === name && m.contact === contact);
+        if (!existingMember) {
+            alert('Selected member not found');
+            return;
+        }
+        showSection('membersSection');
+        renderMembers();
+        updateStats();
+        return;
+    } else {
+        newMember = {
+            id: Date.now(),
+            membershipNo: `GOC-${String(members.length + 1).padStart(4, '0')}`,
+            name: document.getElementById('newName').value.trim(),
+            fatherName: document.getElementById('newFatherName').value.trim(),
+            contact: document.getElementById('newContact').value.trim(),
+            iqama: document.getElementById('newIqama').value.trim(),
+            overseasAddress: document.getElementById('newOverseasAddress').value.trim(),
+            pakistanAddress: document.getElementById('newPakistanAddress').value.trim(),
+            payments: {},
+            total: 0,
+            nextPaymentMonth: MONTHS[0],
+            lastPayment: null
+        };
+
+        if (!newMember.name || !newMember.fatherName || !newMember.contact || !newMember.iqama) {
+            alert('Please fill all required fields');
+            return;
+        }
+
+        if (members.some(m => m.contact === newMember.contact || m.iqama === newMember.iqama || m.membershipNo === newMember.membershipNo)) {
+            alert('Member already exists');
+            return;
+        }
+
+        members.push(newMember);
+        localStorage.setItem('members', JSON.stringify(members));
+    }
+
+    showSection('membersSection');
+    renderMembers();
+    updateStats();
+}
+
+// Open payment modal
+function openPayments(index) {
+    selectedMemberIndex = index;
+    const member = members[index];
+    const currentYear = new Date().getFullYear();
+    document.getElementById('paymentMonth').value = `${member.nextPaymentMonth} ${currentYear}`;
+    document.getElementById('paymentAmount').value = 100;
+    document.getElementById('paymentMethod').value = 'Cash';
+    document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+// Save payment
+function savePayment() {
+    if (selectedMemberIndex === null) return;
+    const member = members[selectedMemberIndex];
+    const amount = Number(document.getElementById('paymentAmount').value);
+    const method = document.getElementById('paymentMethod').value;
+    
+    if (!amount || amount <= 0) {
+        alert('Invalid amount');
+        return;
+    }
+
+    const month = member.nextPaymentMonth;
+    member.payments[month] = {
+        amount: amount,
+        method: method,
+        date: new Date().toLocaleDateString()
+    };
+    member.total += amount;
+    member.lastPayment = new Date().toLocaleDateString();
+    
+    const nextMonthIndex = (MONTHS.indexOf(month) + 1) % 12;
+    member.nextPaymentMonth = MONTHS[nextMonthIndex];
+    
+    localStorage.setItem('members', JSON.stringify(members));
+    closeModal();
+    renderMembers();
+    updateStats();
+}
+
+// Open payment edits
+function openPaymentEdits(index) {
+    selectedMemberIndex = index;
+    const member = members[index];
+    const paymentHTML = MONTHS.map(month => `
+        <div class="form-group">
+            <label>${month}</label>
+            <input type="number" data-month="${month}" value="${member.payments[month]?.amount || 0}" min="0">
+            <select data-month="${month}">
+                <option value="Cash" ${member.payments[month]?.method === 'Cash' ? 'selected' : ''}>Cash</option>
+                <option value="Bank" ${member.payments[month]?.method === 'Bank' ? 'selected' : ''}>Bank</option>
+            </select>
+        </div>
+    `).join('');
+    document.getElementById('paymentEditFields').innerHTML = paymentHTML;
+    document.getElementById('paymentEditModal').classList.remove('hidden');
+}
+
+// Save payment edits
+function savePaymentEdits() {
+    if (selectedMemberIndex === null) return;
+    const member = members[selectedMemberIndex];
+    let newTotal = 0;
+    let lastPaidIndex = -1;
+
+    MONTHS.forEach(month => {
+        const amount = Number(document.querySelector(`input[data-month="${month}"]`).value) || 0;
+        const method = document.querySelector(`select[data-month="${month}"]`).value;
+        
+        member.payments[month] = {
+            amount: amount,
+            method: method,
+            date: member.payments[month]?.date || new Date().toLocaleDateString()
+        };
+        
+        newTotal += amount;
+        if (amount > 0) {
+            const idx = MONTHS.indexOf(month);
+            if (idx > lastPaidIndex) lastPaidIndex = idx;
+        }
+    });
+
+    member.total = newTotal;
+    member.nextPaymentMonth = MONTHS[(lastPaidIndex + 1) % 12];
+    member.lastPayment = lastPaidIndex >= 0 ? new Date().toLocaleDateString() : null;
+    
+    localStorage.setItem('members', JSON.stringify(members));
+    closeModal();
+    renderMembers();
+    updateStats();
+}
+
+// Create backup
+function createBackup() {
+    const backup = {
+        date: new Date().toISOString(),
+        members: members,
+        executiveMembers: executiveMembers,
+        loans: loans,
+        loanMembers: loanMembers
+    };
+    const blob = new Blob([JSON.stringify(backup)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gohkir_backup_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Restore backup
+function restoreBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const backup = JSON.parse(e.target.result);
+            if (!backup.members) throw new Error('Invalid backup file');
+            
+            backup.members.forEach((member, index) => {
+                if (!member.membershipNo) {
+                    member.membershipNo = `GOC-${String(index + 1).padStart(4, '0')}`;
+                } else {
+                    member.membershipNo = `GOC-${member.membershipNo.split('-')[1]}`;
+                }
+            });
+
+            if (confirm('This will overwrite current data. Continue?')) {
+                members = backup.members;
+                executiveMembers = backup.executiveMembers || {};
+                loans = backup.loans || [];
+                loanMembers = backup.loanMembers || [];
+                localStorage.setItem('members', JSON.stringify(members));
+                localStorage.setItem('executiveMembers', JSON.stringify(executiveMembers));
+                localStorage.setItem('loans', JSON.stringify(loans));
+                localStorage.setItem('loanMembers', JSON.stringify(loanMembers));
+                renderMembers();
+                renderExecutiveMembers();
+                renderLoans();
+                updateStats();
+                alert('Backup restored successfully');
+            }
+        } catch (error) {
+            alert('Error restoring backup: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Export to Excel
+function exportToExcel() {
+    const data = members.map(m => ({
+        "Membership No": m.membershipNo,
+        Name: m.name,
+        "Father's Name": m.fatherName,
+        Contact: m.contact,
+        Iqama: m.iqama,
+        "Overseas Address": m.overseasAddress,
+        "Pakistan Address": m.pakistanAddress,
+        ...Object.fromEntries(MONTHS.map(month => [month, m.payments[month]?.amount || 0])),
+        ...Object.fromEntries(MONTHS.map(month => [`${month}-method`, m.payments[month]?.method || ''])),
+        Total: m.total,
+        "Last Payment": m.lastPayment,
+        "Next Payment": m.nextPaymentMonth
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Members");
+    XLSX.writeFile(wb, "members.xlsx");
+}
+
+// Handle Excel upload
+function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, {type: "array"});
+        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        
+        members = json.map((item, index) => ({
+            id: item.id || Date.now(),
+            membershipNo: item["Membership No"] || `GOC-${String(index + 1).padStart(4, '0')}`,
+            name: item.Name,
+            fatherName: item["Father's Name"] || '',
+            contact: item.Contact,
+            iqama: item.Iqama,
+            overseasAddress: item["Overseas Address"] || '',
+            pakistanAddress: item["Pakistan Address"] || '',
+            payments: Object.fromEntries(MONTHS.map(m => [m, {
+                amount: item[m] || 0,
+                method: item[`${m}-method`] || 'Cash',
+                date: item[`${m}-date`] || new Date().toLocaleDateString()
+            }])),
+            total: item.Total || 0,
+            nextPaymentMonth: item["Next Payment"] || MONTHS[0],
+            lastPayment: item["Last Payment"] || null
+        }));
+        
+        localStorage.setItem('members', JSON.stringify(members));
+        renderMembers();
+        renderExecutiveMembers();
+        renderLoans();
+        updateStats();
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Render members
+function renderMembers(memberList = members) {
+    const tbody = document.getElementById('membersBody');
+    tbody.innerHTML = memberList.length > 0 ? 
+        memberList.map((m, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${m.membershipNo}</td>
+                <td>${m.name}</td>
+                <td>${m.fatherName}</td>
+                <td>${m.contact}</td>
+                <td>${m.iqama}</td>
+                <td>SR ${m.total}</td>
+                <td>${m.lastPayment || 'N/A'}</td>
+                <td>
+                    <div class="dropdown">
+                        <button>Actions ▼</button>
+                        <div class="dropdown-content">
+                            <button onclick="editMember(${i})">Edit</button>
+                            <button onclick="openPayments(${i})">Pay</button>
+                            <button onclick="openPaymentEdits(${i})">Edit Payments</button>
+                            <button onclick="deleteMember(${i})">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `).join('') : 
+        '<tr><td colspan="9" class="empty-state">No members found</td></tr>';
+}
+
+// Show member dashboard
+function showMemberDashboard(member) {
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('memberDashboard').classList.remove('hidden');
+    document.getElementById('loanMemberDashboard').classList.add('hidden');
+    
+    // Personal Information
+    document.getElementById('memberPersonalInfo').innerHTML = `
+        <p><strong>Membership Number:</strong> ${member.membershipNo}</p>
+        <p><strong>Name:</strong> ${member.name}</p>
+        <p><strong>Father's Name:</strong> ${member.fatherName}</p>
+        <p><strong>Contact:</strong> ${member.contact}</p>
+        <p><strong>Iqama:</strong> ${member.iqama}</p>
+        <p><strong>Overseas Address:</strong> ${member.overseasAddress}</p>
+        <p><strong>Pakistan Address:</strong> ${member.pakistanAddress}</p>
+    `;
+    
+    // Financial Information
+    document.getElementById('memberFinancialInfo').innerHTML = `
+        <p><strong>Total Contributions:</strong> SR ${member.total}</p>
+        <p><strong>Next Payment Due:</strong> ${member.nextPaymentMonth}</p>
+    `;
+    
+    // Payment History
+    const payments = Object.entries(member.payments)
+        .filter(([_, data]) => data.amount > 0)
+        .sort((a, b) => MONTHS.indexOf(a[0]) - MONTHS.indexOf(b[0]))
+        .map(([m, data]) => `
+            <div class="history-item">
+                <div class="history-details">
+                    <div><strong>${m}</strong> Contribution</div>
+                    <div>${data.method} • ${data.date}</div>
+                </div>
+                <div class="history-amount paid-amount">+ SR ${data.amount}</div>
+            </div>
+        `).join('');
+    
+    document.getElementById('paymentHistory').innerHTML = payments 
+        ? `<h3>Payment History</h3>${payments}`
+        : '<p class="text-center">No payments recorded</p>';
+
+    // Loan History
+    const memberLoans = loans.filter(loan => !loan.isDeleted && loan.remaining > 0 && loan.contact === member.contact);
+    const totalLoan = memberLoans.reduce((sum, loan) => sum + loan.remaining, 0);
+    
+    const loanHTML = memberLoans.map(loan => {
+        const loanPayments = loan.payments.map(payment => `
+            <div class="history-item">
+                <div class="history-details">
+                    <div>Loan Payment</div>
+                    <div>${payment.method} • ${payment.date}</div>
+                </div>
+                <div class="history-amount paid-amount">- SR ${payment.amount}</div>
+            </div>
+        `).join('');
+        
+        return `
+            <div class="card" style="margin-bottom: 20px;">
+                <h4>Loan: SR ${loan.amount} (Remaining: SR ${loan.remaining})</h4>
+                <p><strong>Date:</strong> ${loan.date}</p>
+                <p><strong>Return Date:</strong> ${loan.returnDate}</p>
+                <div style="margin-top: 15px;">
+                    <h5>Payment History:</h5>
+                    ${loanPayments || '<p>No payments recorded</p>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('loanHistory').innerHTML = loanHTML 
+        ? `<h3>Loan History (Total: SR ${totalLoan})</h3>${loanHTML}`
+        : '<p class="text-center">No loans recorded</p>';
+}
+
+// Show loan member dashboard
+function showLoanMemberDashboard(loanMember) {
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('memberDashboard').classList.add('hidden');
+    document.getElementById('loanMemberDashboard').classList.remove('hidden');
+    
+    // Personal Information
+    document.getElementById('loanMemberPersonalInfo').innerHTML = `
+        <p><strong>Name:</strong> ${loanMember.name}</p>
+        <p><strong>Contact:</strong> ${loanMember.contact}</p>
+    `;
+    
+    // Financial Information
+    const memberLoans = loans.filter(loan => !loan.isDeleted && loan.remaining > 0 && loan.contact === loanMember.contact);
+    const totalLoan = memberLoans.reduce((sum, loan) => sum + loan.remaining, 0);
+    
+    document.getElementById('loanMemberFinancialInfo').innerHTML = `
+        <p><strong>Total Loans:</strong> SR ${totalLoan}</p>
+        <p><strong>Active Loans:</strong> ${memberLoans.length}</p>
+    `;
+    
+    // Loan History
+    const loanHTML = memberLoans.map(loan => {
+        const loanPayments = loan.payments.map(payment => `
+            <div class="history-item">
+                <div class="history-details">
+                    <div>Loan Payment</div>
+                    <div>${payment.method} • ${payment.date}</div>
+                </div>
+                <div class="history-amount paid-amount">- SR ${payment.amount}</div>
+            </div>
+        `).join('');
+        
+        return `
+            <div class="card" style="margin-bottom: 20px;">
+                <h4>Loan: SR ${loan.amount} (Remaining: SR ${loan.remaining})</h4>
+                <p><strong>Date:</strong> ${loan.date}</p>
+                <p><strong>Return Date:</strong> ${loan.returnDate}</p>
+                <div style="margin-top: 15px;">
+                    <h5>Payment History:</h5>
+                    ${loanPayments || '<p>No payments recorded</p>'}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('loanMemberHistory').innerHTML = loanHTML 
+        ? `<h3>Loan History (Total: SR ${totalLoan})</h3>${loanHTML}`
+        : '<p class="text-center">No loans recorded</p>';
+}
+
+// Search members
+function searchMembers() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = members.filter(m => 
+        m.name.toLowerCase().includes(searchTerm) ||
+        m.contact.includes(searchTerm) ||
+        m.iqama.includes(searchTerm) ||
+        m.membershipNo.toLowerCase().includes(searchTerm)
+    );
+    renderMembers(filtered);
+}
+
+// Edit member
+function editMember(index) {
+    selectedMemberIndex = index;
+    const m = members[index];
+    document.getElementById('editMembershipNo').value = m.membershipNo;
+    document.getElementById('editName').value = m.name;
+    document.getElementById('editFatherName').value = m.fatherName;
+    document.getElementById('editContact').value = m.contact;
+    document.getElementById('editIqama').value = m.iqama;
+    document.getElementById('editOverseasAddress').value = m.overseasAddress;
+    document.getElementById('editPakistanAddress').value = m.pakistanAddress;
+    document.getElementById('editModal').classList.remove('hidden');
+}
+
+// Save edit
+function saveEdit() {
+    if (selectedMemberIndex === null) return;
+    const m = members[selectedMemberIndex];
+    const oldContact = m.contact;
+    m.name = document.getElementById('editName').value.trim();
+    m.fatherName = document.getElementById('editFatherName').value.trim();
+    m.contact = document.getElementById('editContact').value.trim();
+    m.iqama = document.getElementById('editIqama').value.trim();
+    m.overseasAddress = document.getElementById('editOverseasAddress').value.trim();
+    m.pakistanAddress = document.getElementById('editPakistanAddress').value.trim();
+
+    if (oldContact !== m.contact) {
+        for (let role in executiveMembers) {
+            if (executiveMembers[role]?.contact === oldContact) {
+                executiveMembers[role].contact = m.contact;
+                executiveMembers[role].name = m.name;
+            }
+        }
+        loans.forEach(loan => {
+            if (loan.contact === oldContact && loan.isExistingMember) {
+                loan.contact = m.contact;
+                loan.name = m.name;
+            }
+        });
+        localStorage.setItem('executiveMembers', JSON.stringify(executiveMembers));
+        localStorage.setItem('loans', JSON.stringify(loans));
+    }
+
+    localStorage.setItem('members', JSON.stringify(members));
+    closeModal();
+    renderMembers();
+    renderExecutiveMembers();
+    renderLoans();
+}
+
+// Delete member
+function deleteMember(index) {
+    if (confirm('Delete this member permanently?')) {
+        const member = members[index];
+        for (let role in executiveMembers) {
+            if (executiveMembers[role]?.contact === member.contact) {
+                delete executiveMembers[role];
+            }
+        }
+        loans.forEach(loan => {
+            if (loan.contact === member.contact && loan.isExistingMember) {
+                loan.isDeleted = true;
+            }
+        });
+        members.splice(index, 1);
+        members.forEach((member, i) => {
+            member.membershipNo = `GOC-${String(i + 1).padStart(4, '0')}`;
+        });
+        localStorage.setItem('members', JSON.stringify(members));
+        localStorage.setItem('executiveMembers', JSON.stringify(executiveMembers));
+        localStorage.setItem('loans', JSON.stringify(loans));
+        renderMembers();
+        renderExecutiveMembers();
+        renderLoans();
+        updateStats();
+    }
+}
+
+// Close modal
+function closeModal() {
+    document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+    selectedMemberIndex = null;
+    selectedLoanIndex = null;
+}
+
+// Logout
+function logout() {
+    document.getElementById('loginInput').value = '';
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('memberDashboard').classList.add('hidden');
+    document.getElementById('loanMemberDashboard').classList.add('hidden');
+    document.getElementById('authSection').classList.remove('hidden');
+}
+
+// Update stats
+function updateStats() {
+    const totalContributions = members.reduce((sum, m) => sum + m.total, 0);
+    const totalLoans = loans.reduce((sum, loan) => sum + (loan.remaining || 0), 0);
+    const cashInHand = totalContributions - totalLoans;
+
+    document.getElementById('totalMembers').textContent = members.length;
+    document.getElementById('totalReceived').textContent = totalContributions;
+    document.getElementById('totalLoans').textContent = totalLoans;
+    document.getElementById('cashInHand').textContent = cashInHand;
+
+    document.getElementById('totalContributionsLoan').textContent = totalContributions;
+    document.getElementById('totalLoansAdmin').textContent = totalLoans;
+    document.getElementById('cashInHandAdmin').textContent = cashInHand;
+    
+    document.getElementById('statsTotalContributions').textContent = totalContributions;
+    document.getElementById('statsTotalLoans').textContent = totalLoans;
+    document.getElementById('statsCashInHand').textContent = cashInHand;
+}
+
+// Show admin dashboard
+function showAdminDashboard() {
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+    showSection('membersSection');
+    renderMembers();
+    renderExecutiveMembers();
+    renderLoans();
+    renderCharts();
+}
+
+// Render executive members
+function renderExecutiveMembers() {
+    const tbody = document.getElementById('executiveBody');
+    const tbodyLogin = document.getElementById('executiveBodyLogin');
+    
+    const assignedMembers = new Set(Object.values(executiveMembers).map(m => m?.contact));
+
+    const html = EXECUTIVE_ROLES.map(role => {
+        const member = executiveMembers[role] || {};
+        return `
+            <tr>
+                <td>${role}</td>
+                <td>
+                    <div class="member-dropdown">
+                        <input type="text" class="member-input" data-role="${role}" value="${member.name || ''}" placeholder="Select Member" oninput="showMemberDropdown(this, 'executive')" onclick="showMemberDropdown(this, 'executive')">
+                        <div class="member-dropdown-list" id="dropdown-${role.replace(/\//g, '-')}" data-role="${role}">
+                            ${renderMemberDropdown(role, assignedMembers)}
+                        </div>
+                    </div>
+                </td>
+                <td><input type="text" class="member-contact" data-role="${role}" value="${member.contact || ''}" readonly></td>
+                <td><button onclick="removeExecutiveMember('${role}')">Remove</button></td>
+            </tr>
+        `;
+    }).join('');
+
+    const htmlLogin = EXECUTIVE_ROLES.map(role => {
+        const member = executiveMembers[role] || {};
+        return `
+            <tr>
+                <td>${role}</td>
+                <td>${member.name || 'Not Assigned'}</td>
+                <td>${member.contact || '-'}</td>
+            </tr>
+        `;
+    }).join('');
+
+    tbody.innerHTML = html;
+    tbodyLogin.innerHTML = htmlLogin;
+}
+
+// Render member dropdown
+function renderMemberDropdown(role, assignedMembers) {
+    return members
+        .filter(m => !assignedMembers.has(m.contact) || executiveMembers[role]?.contact === m.contact)
+        .map(m => `<div onclick="selectMember('${role}', '${m.name}', '${m.contact}')">${m.name} (${m.membershipNo})</div>`)
+        .join('');
+}
+
+// Show member dropdown
+function showMemberDropdown(input, type) {
+    let dropdown, role;
+    if (type === 'executive') {
+        role = input.getAttribute('data-role');
+        dropdown = document.getElementById(`dropdown-${role.replace(/\//g, '-')}`);
+    } else if (type === 'member') {
+        dropdown = document.getElementById('memberDropdown');
+    } else {
+        dropdown = document.getElementById('loanMemberDropdown');
+    }
+    const searchTerm = input.value.toLowerCase();
+    
+    document.querySelectorAll('.member-dropdown-list').forEach(d => {
+        if (d !== dropdown) d.style.display = 'none';
+    });
+
+    dropdown.style.display = 'block';
+    let filteredMembers;
+    if (type === 'executive') {
+        const assignedMembers = new Set(Object.values(executiveMembers).map(m => m?.contact));
+        filteredMembers = members.filter(m => 
+            (!assignedMembers.has(m.contact) || executiveMembers[role]?.contact === m.contact) &&
+            (m.name.toLowerCase().includes(searchTerm) || m.membershipNo.toLowerCase().includes(searchTerm))
+        );
+        dropdown.innerHTML = filteredMembers
+            .map(m => `<div onclick="selectMember('${role}', '${m.name}', '${m.contact}')">${m.name} (${m.membershipNo})</div>`)
+            .join('');
+    } else if (type === 'member') {
+        filteredMembers = getMembersWithLoans().filter(m => 
+            m.name.toLowerCase().includes(searchTerm) || m.membershipNo.toLowerCase().includes(searchTerm)
+        );
+        dropdown.innerHTML = filteredMembers
+            .map(m => `<div onclick="selectExistingMember('${m.name}', '${m.contact}')">${m.name} (${m.membershipNo})</div>`)
+            .join('');
+    } else {
+        filteredMembers = members.filter(m => 
+            m.name.toLowerCase().includes(searchTerm) || m.membershipNo.toLowerCase().includes(searchTerm)
+        );
+        dropdown.innerHTML = filteredMembers
+            .map(m => `<div onclick="selectLoanMember('${m.name}', '${m.contact}')">${m.name} (${m.membershipNo})</div>`)
+            .join('');
+    }
+
+    if (!filteredMembers.length) dropdown.style.display = 'none';
+}
+
+// Select member
+function selectMember(role, name, contact) {
+    executiveMembers[role] = { name, contact };
+    localStorage.setItem('executiveMembers', JSON.stringify(executiveMembers));
+    renderExecutiveMembers();
+    document.querySelectorAll('.member-dropdown-list').forEach(d => d.style.display = 'none');
+}
+
+// Select existing member
+function selectExistingMember(name, contact) {
+    document.getElementById('existingMemberName').value = name;
+    document.getElementById('existingMemberContact').value = contact;
+    document.getElementById('memberDropdown').style.display = 'none';
+}
+
+// Remove executive member
+function removeExecutiveMember(role) {
+    if (confirm(`Remove ${role} from executive body?`)) {
+        delete executiveMembers[role];
+        localStorage.setItem('executiveMembers', JSON.stringify(executiveMembers));
+        renderExecutiveMembers();
+    }
+}
+
+// Show loan member dropdown
+function showLoanMemberDropdown(input) {
+    const dropdown = document.getElementById('loanMemberDropdown');
+    const searchTerm = input.value.toLowerCase();
+    
+    document.querySelectorAll('.member-dropdown-list').forEach(d => {
+        if (d !== dropdown) d.style.display = 'none';
+    });
+
+    dropdown.style.display = 'block';
+    const filteredMembers = members.filter(m => 
+        m.name.toLowerCase().includes(searchTerm) || 
+        m.membershipNo.toLowerCase().includes(searchTerm)
+    );
+    dropdown.innerHTML = filteredMembers
+        .map(m => `<div onclick="selectLoanMember('${m.name}', '${m.contact}')">${m.name} (${m.membershipNo})</div>`)
+        .join('');
+
+    if (!filteredMembers.length) dropdown.style.display = 'none';
+}
+
+// Select loan member
+function selectLoanMember(name, contact) {
+    document.getElementById('loanMemberName').value = name;
+    document.getElementById('loanMemberContact').value = contact;
+    document.getElementById('loanMemberDropdown').style.display = 'none';
+}
+
+// Toggle loan form
+function toggleLoanForm() {
+    const form = document.getElementById('loanForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        document.getElementById('loanMemberType').value = 'existing';
+        document.getElementById('loanMemberName').value = '';
+        document.getElementById('loanMemberContact').value = '';
+        document.getElementById('loanNewName').value = '';
+        document.getElementById('loanNewContact').value = '';
+        document.getElementById('loanAmount').value = '';
+        document.getElementById('loanPeriod').value = '';
+        toggleLoanMemberFields();
+    }
+}
+
+// Save loan
+function saveLoan() {
+    const memberType = document.getElementById('loanMemberType').value;
+    let name, contact;
+
+    if (memberType === 'existing') {
+        name = document.getElementById('loanMemberName').value.trim();
+        contact = document.getElementById('loanMemberContact').value.trim();
+        if (!name || !contact) {
+            alert('Please select a member');
+            return;
+        }
+        const existingMember = members.find(m => m.name === name && m.contact === contact);
+        if (!existingMember) {
+            alert('Selected member not found');
+            return;
+        }
+    } else {
+        name = document.getElementById('loanNewName').value.trim();
+        contact = document.getElementById('loanNewContact').value.trim();
+        if (!name || !contact) {
+            alert('Please fill all required fields');
+            return;
+        }
+        if (loanMembers.some(m => m.contact === contact) || members.some(m => m.contact === contact)) {
+            alert('Contact number already exists');
+            return;
+        }
+        loanMembers.push({ name, contact });
+        localStorage.setItem('loanMembers', JSON.stringify(loanMembers));
+    }
+
+    const amount = Number(document.getElementById('loanAmount').value);
+    const period = parseInt(document.getElementById('loanPeriod').value, 10);
+    if (isNaN(period) || period < 1 || period > 120) {
+        alert('Please enter a valid loan period between 1 and 120 days');
+        return;
+    }
+    const date = new Date().toLocaleDateString();
+    const returnDate = calculateReturnDate(date, period);
+    const totalContributions = members.reduce((sum, m) => sum + m.total, 0);
+    const totalLoans = loans.reduce((sum, loan) => sum + (loan.remaining || 0), 0);
+
+    if (!amount || amount <= 0) {
+        alert('Invalid loan amount');
+        return;
+    }
+
+    if (amount > (totalContributions - totalLoans)) {
+        alert('Loan amount exceeds available cash in hand');
+        return;
+    }
+
+    const newLoan = {
+        id: Date.now(),
+        name,
+        contact,
+        amount,
+        remaining: amount,
+        period: period,
+        date,
+        returnDate,
+        payments: [],
+        isExistingMember: memberType === 'existing',
+        isDeleted: false
+    };
+
+    loans.push(newLoan);
+    localStorage.setItem('loans', JSON.stringify(loans));
+    toggleLoanForm();
+    renderLoans();
+    updateStats();
+}
+
+// Render loans
+function renderLoans() {
+    const tbody = document.getElementById('loansBody');
+    const tbodyLogin = document.getElementById('loansBodyLogin');
+
+    const activeLoans = loans.filter(loan => !loan.isDeleted && loan.remaining > 0);
+    
+    const html = activeLoans.map(loan => {
+        return `
+            <tr>
+                <td>${loan.name}</td>
+                <td>${loan.contact}</td>
+                <td>SR ${loan.amount}</td>
+                <td>SR ${loan.remaining}</td>
+                <td>${loan.returnDate}</td>
+                <td>
+                    <div class="dropdown">
+                        <button>Actions ▼</button>
+                        <div class="dropdown-content">
+                            <button onclick="openLoanPayment(${loan.id})">Record Payment</button>
+                            <button onclick="viewLoanPaymentHistory(${loan.id})">View Payments</button>
+                            <button onclick="editLoan(${loan.id})">Edit Loan</button>
+                            <button onclick="deleteLoan(${loan.id})">Delete Loan</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    const htmlLogin = activeLoans.map(loan => `
+        <tr>
+            <td>${loan.name}</td>
+            <td>${loan.contact}</td>
+            <td>SR ${loan.amount}</td>
+            <td>SR ${loan.remaining}</td>
+        </tr>
+    `).join('');
+
+    tbody.innerHTML = html || '<tr><td colspan="6" class="empty-state">No loans found</td></tr>';
+    tbodyLogin.innerHTML = htmlLogin || '<tr><td colspan="4" class="empty-state">No loans found</td></tr>';
+}
+
+// Open loan payment
+function openLoanPayment(loanId) {
+    const loan = loans.find(l => l.id === loanId);
+    selectedLoanIndex = loans.indexOf(loan);
+    document.getElementById('loanRemaining').value = loan.remaining;
+    document.getElementById('loanPaymentAmount').value = '';
+    
+    // Set default date to today
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    document.getElementById('loanPaymentDate').value = formattedDate;
+    
+    document.getElementById('loanPaymentMethod').value = 'Cash';
+    document.getElementById('loanPaymentModal').classList.remove('hidden');
+}
+
+// Save loan payment
+function saveLoanPayment() {
+    if (selectedLoanIndex === null) return;
+    const loan = loans[selectedLoanIndex];
+    const paymentAmount = Number(document.getElementById('loanPaymentAmount').value);
+    const paymentDate = document.getElementById('loanPaymentDate').value;
+    const paymentMethod = document.getElementById('loanPaymentMethod').value;
+
+    if (!paymentAmount || paymentAmount <= 0) {
+        alert('Invalid payment amount');
+        return;
+    }
+
+    if (paymentAmount > loan.remaining) {
+        alert('Payment amount cannot exceed remaining loan');
+        return;
+    }
+
+    // Add payment to loan
+    loan.payments.push({
+        amount: paymentAmount,
+        date: paymentDate,
+        method: paymentMethod
+    });
+    
+    // Update remaining amount
+    loan.remaining -= paymentAmount;
+    
+    localStorage.setItem('loans', JSON.stringify(loans));
+    closeModal();
+    renderLoans();
+    updateStats();
+}
+
+// View loan payment history
+function viewLoanPaymentHistory(loanId) {
+    const loan = loans.find(l => l.id === loanId);
+    if (!loan) return;
+    
+    let html = `<h4>Loan Details</h4>
+                <p><strong>Amount:</strong> SR ${loan.amount}</p>
+                <p><strong>Remaining:</strong> SR ${loan.remaining}</p>
+                <p><strong>Date:</strong> ${loan.date}</p>
+                <p><strong>Return Date:</strong> ${loan.returnDate}</p>
+                <h4 style="margin-top: 20px;">Payment History</h4>`;
+    
+    if (loan.payments.length > 0) {
+        html += `<table style="width: 100%; margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount (SR)</th>
+                            <th>Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+        
+        loan.payments.forEach(payment => {
+            html += `<tr>
+                        <td>${payment.date}</td>
+                        <td>${payment.amount}</td>
+                        <td>${payment.method}</td>
+                    </tr>`;
+        });
+        
+        html += `</tbody></table>`;
+    } else {
+        html += '<p>No payments recorded for this loan</p>';
+    }
+    
+    document.getElementById('loanPaymentHistoryContent').innerHTML = html;
+    document.getElementById('loanPaymentHistoryModal').classList.remove('hidden');
+}
+
+// Edit loan
+function editLoan(loanId) {
+    const loan = loans.find(l => l.id === loanId);
+    selectedLoanIndex = loans.indexOf(loan);
+    document.getElementById('editLoanAmount').value = loan.amount;
+    document.getElementById('editLoanPeriod').value = loan.period;
+    document.getElementById('editLoanModal').classList.remove('hidden');
+}
+
+// Save loan edit
+function saveLoanEdit() {
+    if (selectedLoanIndex === null) return;
+    const loan = loans[selectedLoanIndex];
+    const newAmount = Number(document.getElementById('editLoanAmount').value);
+    const newPeriod = parseInt(document.getElementById('editLoanPeriod').value, 10);
+
+    if (!newAmount || newAmount <= 0) {
+        alert('Invalid loan amount');
+        return;
+    }
+
+    if (isNaN(newPeriod) || newPeriod < 1 || newPeriod > 120) {
+        alert('Please enter a valid loan period between 1 and 120 days');
+        return;
+    }
+
+    loan.amount = newAmount;
+    loan.remaining = newAmount; // Reset remaining amount
+    loan.period = newPeriod;
+    loan.returnDate = calculateReturnDate(loan.date, newPeriod);
+    localStorage.setItem('loans', JSON.stringify(loans));
+    closeModal();
+    renderLoans();
+    updateStats();
+}
+
+// Delete loan
+function deleteLoan(loanId) {
+    if (confirm('Delete this loan permanently?')) {
+        const loan = loans.find(l => l.id === loanId);
+        loan.isDeleted = true;
+        localStorage.setItem('loans', JSON.stringify(loans));
+        renderLoans();
+        updateStats();
+    }
+}
+
+// Render charts
+function renderCharts() {
+    // Contributions by month
+    const monthlyContributions = {};
+    MONTHS.forEach(month => {
+        monthlyContributions[month] = 0;
+    });
+    
+    members.forEach(member => {
+        MONTHS.forEach(month => {
+            if (member.payments[month]) {
+                monthlyContributions[month] += member.payments[month].amount || 0;
+            }
+        });
+    });
+    
+    const contributionsCtx = document.getElementById('contributionsChart').getContext('2d');
+    new Chart(contributionsCtx, {
+        type: 'bar',
+        data: {
+            labels: MONTHS,
+            datasets: [{
+                label: 'Contributions (SR)',
+                data: MONTHS.map(month => monthlyContributions[month]),
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Loan status
+    const activeLoans = loans.filter(loan => !loan.isDeleted && loan.remaining > 0).length;
+    const repaidLoans = loans.filter(loan => !loan.isDeleted && loan.remaining === 0).length;
+    const deletedLoans = loans.filter(loan => loan.isDeleted).length;
+    
+    const loansCtx = document.getElementById('loansChart').getContext('2d');
+    new Chart(loansCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Active Loans', 'Repaid Loans', 'Deleted Loans'],
+            datasets: [{
+                data: [activeLoans, repaidLoans, deletedLoans],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.member-dropdown')) {
+        document.querySelectorAll('.member-dropdown-list').forEach(d => d.style.display = 'none');
+    }
+});
+
+// Initialize
+updateStats();
+renderExecutiveMembers();
+renderLoans();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'932427591d51baf0',t:'MTc0NDk3OTIxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
