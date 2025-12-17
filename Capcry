@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>वीडियो स्टूडियो - क्रिएटिव एडिटर</title>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+    <style>
+        :root {
+            --primary-color: #764ba2; /* Purple */
+            --secondary-color: #667eea; /* Blue */
+            --accent-color: #4ecdc4; /* Teal */
+            --danger-color: #ff6b6b; /* Red */
+            --text-color: #f0f0f0; /* Light Gray */
+            --bg-dark: #1e1e2f; /* Dark Purple-Blue */
+            --bg-medium: #2a2a3e; /* Slightly Lighter Dark */
+            --bg-light: #3c3c5a; /* Even Lighter Dark */
+            --border-radius: 12px;
+            --button-radius: 25px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px; /* Mobile first max-width */
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px rgba(255,255,255,0.2);
+        }
+        .header p {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: var(--accent-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+
+        /* --- Home Screen --- */
+        .home-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .create-new-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .create-new-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .recent-projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .project-thumbnail {
+            background: var(--bg-medium);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .project-thumbnail:active {
+            transform: translateY(2px);
+        }
+        .project-thumbnail img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
+        .project-thumbnail p {
+            padding: 10px;
+            font-size: 0.85em;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .project-thumbnail span {
+            display: block;
+            font-size: 0.7em;
+            color: rgba(255,255,255,0.5);
+            margin-top: 3px;
+        }
+
+        /* --- Editor Screen --- */
+        .editor-screen {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+        }
+        .video-preview-container {
+            width: 100%;
+            background: #000;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 9 / 16; /* Portrait aspect ratio for mobile */
+            max-height: 70vh; /* Don't let it take too much screen space */
+        }
+        #preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .controls-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .control-button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: var(--button-radius);
+            background: var(--bg-light);
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            flex: 1 1 auto; /* Allow buttons to grow/shrink */
+            min-width: 80px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .control-button.primary {
+            background: var(--accent-color);
+        }
+        .control-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        input[type="file"] {
+            display: none;
+        }
+
+        .timeline-container {
+            width: 100%;
+            overflow-x: scroll;
+            padding: 10px 0;
+            white-space: nowrap;
+            background: var(--bg-medium);
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+        .timeline-track {
+            display: inline-flex;
+            gap: 5px;
+            height: 60px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 5px;
+            margin: 0 5px;
+            align-items: center;
+        }
+        .clip-item {
+            min-width: 80px; /* Represents a segment of video */
+            height: 50px;
+            background: var(--secondary-color);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            color: white;
+            cursor: grab;
+            position: relative;
+            overflow: hidden;
+        }
+        .clip-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .playhead {
+            position: sticky;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: var(--danger-color);
+            z-index: 10;
+        }
+        .timeline-overlay-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .timeline-control-btn {
+            background: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: var(--button-radius);
+            font-size: 0.8em;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* --- Effects Panel --- */
+        .effects-panel {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+        }
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+        }
+        .effect-card {
+            background: var(--bg-medium);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .effect-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .effect-card img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+        .effect-card.active {
+            outline: 2px solid var(--accent-color);
+            background: var(--bg-light);
+        }
+
+        /* --- AI Image Generation Panel --- */
+        .ai-image-panel {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+        }
+        .prompt-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--bg-medium);
+            color: var(--text-color);
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .ai-options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .ai-option-btn {
+            background: var(--bg-light);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: var(--button-radius);
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ai-option-btn.active {
+            background: var(--accent-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .generate-ai-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .generated-image-preview {
+            width: 100%;
+            min-height: 200px;
+            background: var(--bg-medium);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .generated-image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .generated-image-preview p {
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* --- Text & Sticker Panel --- */
+        .text-sticker-panel {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+        }
+        .text-input-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--bg-medium);
+            color: var(--text-color);
+            font-size: 1em;
+        }
+        .font-selector, .color-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .font-selector button, .color-swatch {
+            background: var(--bg-light);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: var(--button-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            padding: 0;
+            border: 2px solid transparent;
+        }
+        .color-swatch.active {
+            border-color: white;
+        }
+        .sticker-categories {
+            display: flex;
+            overflow-x: scroll;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+        .sticker-category-btn {
+            background: var(--bg-light);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: var(--button-radius);
+            border: none;
+            white-space: nowrap;
+        }
+        .sticker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: scroll;
+            padding: 5px;
+            background: var(--bg-medium);
+            border-radius: var(--border-radius);
+        }
+        .sticker-item {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            cursor: pointer;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        /* --- Share/Export Panel --- */
+        .share-export-panel {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+        }
+        .export-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-medium);
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        .export-option label {
+            font-weight: bold;
+        }
+        .export-option select {
+            background: var(--bg-light);
+            color: var(--text-color);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-medium);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+        }
+        .share-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+        .share-btn {
+            background: var(--bg-light);
+            color: var(--text-color);
+            padding: 15px 10px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+        .share-btn:active {
+            transform: translateY(2px);
+        }
+        .share-btn img {
+            width: 30px;
+            height: 30px;
+            filter: invert(1); /* For social media icons to fit dark theme */
+        }
+        .export-final-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, var(--danger-color), var(--primary-color));
+            color: white;
+            border: none;
+            border-radius: var(--button-radius);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+        .export-final-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* --- Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-medium);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.7em;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s ease;
+        }
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+        .nav-item img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 3px;
+            filter: invert(1) brightness(0.6); /* Default grayed out */
+        }
+        .nav-item.active img {
+            filter: invert(1) brightness(1) sepia(1) saturate(1000%) hue-rotate(150deg); /* Teal color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>वीडियो स्टूडियो</h1>
+            <p>रचनात्मकता का अनुभव करें</p>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="homeScreen" class="home-screen">
+            <button class="create-new-btn" onclick="showScreen('editorScreen'); loadFFmpeg();">
+                🎥 नया प्रोजेक्ट बनाएँ
+            </button>
+            <h2 class="section-title">हाल के प्रोजेक्ट</h2>
+            <div class="recent-projects-grid">
+                <!-- Example Project Thumbnails -->
+                <div class="project-thumbnail">
+                    <img src="https://via.placeholder.com/150x100/3c3c5a/f0f0f0?text=वीडियो+1" alt="वीडियो थंबनेल">
+                    <p>एडवेंचर ट्रिप</p>
+                    <span>2 दिन पहले</span>
+                </div>
+                <div class="project-thumbnail">
+                    <img src="https://via.placeholder.com/150x100/3c3c5a/f0f0f0?text=वीडियो+2" alt="वीडियो थंबनेल">
+                    <p>जन्मदिन का जश्न</p>
+                    <span>1 सप्ताह पहले</span>
+                </div>
+                <div class="project-thumbnail">
+                    <img src="https://via.placeholder.com/150x100/3c3c5a/f0f0f0?text=वीडियो+3" alt="वीडियो थंबनेल">
+                    <p>पालतू जानवर</p>
+                    <span>3 सप्ताह पहले</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor Screen -->
+        <div id="editorScreen" class="editor-screen">
+            <div class="video-preview-container">
+                <video id="preview" controls></video>
+                <div id="funnyClipOverlay" style="position: absolute; top: 10px; right: 10px; display: none;">
+                    <img id="funnyClipImg" src="" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px;">
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <input type="file" id="fileInput" accept="video/*,image/*">
+                <button class="control-button primary" onclick="document.getElementById('fileInput').click()">
+                    ⬆️ फ़ाइल अपलोड करें
+                </button>
+                <button class="control-button" id="playPauseBtn">▶️ चलाएँ</button>
+                <button class="control-button" onclick="splitClip()">✂️ स्प्लिट</button>
+                <button class="control-button" onclick="trimClip()">🔪 ट्रिम</button>
+                <button class="control-button" onclick="changeSpeed()">⚡ स्पीड</button>
+            </div>
+
+            <div class="timeline-container">
+                <div class="playhead"></div>
+                <div class="timeline-track" id="mainTimeline">
+                    <!-- Video/Image Clips will be added here -->
+                    <div class="clip-item" data-type="video" data-src="https://www.w3schools.com/html/mov_bbb.mp4" style="width: 200px;">
+                        <img src="https://via.placeholder.com/150x100/3c3c5a/f0f0f0?text=क्लिप+1" alt="क्लिप थंबनेल">
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-overlay-buttons">
+                <button class="timeline-control-btn" onclick="addAudio()">🎵 ऑडियो</button>
+                <button class="timeline-control-btn" onclick="addLayer()">➕ लेयर</button>
+            </div>
+        </div>
+
+        <!-- Effects Panel -->
+        <div id="effectsPanel" class="effects-panel">
+            <h2 class="section-title">वीडियो प्रभाव</h2>
+            <div class="effects-grid">
+                <div class="effect-card active" data-effect="none" onclick="applyVFX('none')">
+                    <img src="https://via.placeholder.com/50/4ecdc4/ffffff?text=नॉर्मल" alt="नॉर्मल">
+                    <p>नॉर्मल</p>
+                </div>
+                <div class="effect-card" data-effect="blur" onclick="applyVFX('blur')">
+                    <img src="https://via.placeholder.com/50/4ecdc4/ffffff?text=ब्लर" alt="ब्लर">
+                    <p>ब्लर ✨</p>
+                </div>
+                <div class="effect-card" data-effect="glitch" onclick="applyVFX('glitch')">
+                    <img src="https://via.placeholder.com/50/ff6b6b/ffffff?text=ग्लिच" alt="ग्लिच">
+                    <p>ग्लिच 🔥</p>
+                </div>
+                <div class="effect-card" data-effect="vintage" onclick="applyVFX('vintage')">
+                    <img src="https://via.placeholder.com/50/764ba2/ffffff?text=विंटेज" alt="विंटेज">
+                    <p>विंटेज 🎞️</p>
+                </div>
+                <div class="effect-card" data-effect="neon" onclick="applyVFX('neon')">
+                    <img src="https://via.placeholder.com/50/667eea/ffffff?text=नियॉन" alt="नियॉन">
+                    <p>नियॉन 🌈</p>
+                </div>
+                <div class="effect-card" data-effect="vhs" onclick="applyVFX('vhs')">
+                    <img src="https://via.placeholder.com/50/a8a8a8/ffffff?text=वीएचएस" alt="वीएचएस">
+                    <p>वीएचएस 📺</p>
+                </div>
+                <div class="effect-card" data-effect="chroma" onclick="applyVFX('chroma')">
+                    <img src="https://via.placeholder.com/50/00ff00/000000?text=क्रोमा" alt="क्रोमा">
+                    <p>क्रोमा की 🟢</p>
+                </div>
+                <div class="effect-card" data-effect="slowmo" onclick="applyVFX('slowmo')">
+                    <img src="https://via.placeholder.com/50/aaaaaa/ffffff?text=स्लोमो" alt="स्लोमो">
+                    <p>स्लो-मो 🐢</p>
+                </div>
+            </div>
+            <h2 class="section-title">मज़ेदार क्लिप (ऑनलाइन)</h2>
+            <div class="effects-grid">
+                <div class="effect-card" onclick="addOnlineClip('https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif')">
+                    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="डांस">
+                    <p>डांस</p>
+                </div>
+                <div class="effect-card" onclick="addOnlineClip('https://media.giphy.com/media/3o7aDgf124OWrSLPqM/giphy.gif')">
+                    <img src="https://media.giphy.com/media/3o7aDgf124OWrSLPqM/giphy.gif" alt="बिल्ली">
+                    <p>बिल्ली</p>
+                </div>
+                <div class="effect-card" onclick="addOnlineClip('https://media.giphy.com/media/l0HlRnAWXxn0MhKLK/giphy.gif')">
+                    <img src="https://media.giphy.com/media/l0HlRnAWXxn0MhKLK/giphy.gif" alt="मज़ेदार">
+                    <p>मज़ेदार</p>
+                </div>
+                <div class="effect-card" onclick="addOnlineClip('https://media.giphy.com/media/gFuK2Yd44kUeR3F26i/giphy.gif')">
+                    <img src="https://media.giphy.com/media/gFuK2Yd44kUeR3F26i/giphy.gif" alt="हँसी">
+                    <p>हँसी</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Image Generation Panel -->
+        <div id="aiImagePanel" class="ai-image-panel">
+            <h2 class="section-title">📸 AI इमेज जनरेटर</h2>
+            <textarea id="aiPrompt" class="prompt-input" placeholder="यहां अपना प्रोम्प्ट लिखें (जैसे: पहाड़ों में उड़ने वाला ड्रैगन, यथार्थवादी, काल्पनिक)"></textarea>
+            <div class="ai-options-grid">
+                <button class="ai-option-btn active" data-style="photorealistic">फोटोरियलिस्टिक</button>
+                <button class="ai-option-btn" data-style="anime">एनीमे</button>
+                <button class="ai-option-btn" data-style="painting">पेंटिंग</button>
+                <button class="ai-option-btn" data-style="cartoonish">कार्टूनिश</button>
+                <button class="ai-option-btn" data-ratio="1:1">1:1</button>
+                <button class="ai-option-btn" data-ratio="9:16">9:16</button>
+                <button class="ai-option-btn" data-ratio="16:9">16:9</button>
+            </div>
+            <button class="generate-ai-btn" onclick="generateAIImage()">इमेज जेनरेट करें</button>
+            <div class="generated-image-preview">
+                <img id="generatedImage" src="" style="display: none;" alt="जेनरेट की गई इमेज">
+                <p id="aiPlaceholder">यहां जेनरेट की गई इमेज दिखेगी</p>
+            </div>
+            <button class="control-button primary" onclick="addGeneratedImageToTimeline()">टाइमलाइन में जोड़ें</button>
+        </div>
+
+        <!-- Text & Sticker Panel -->
+        <div id="textStickerPanel" class="text-sticker-panel">
+            <h2 class="section-title">📝 टेक्स्ट और स्टिकर</h2>
+            <input type="text" id="textOverlayInput" class="text-input-field" placeholder="यहां टेक्स्ट लिखें">
+            
+            <h3 class="section-title" style="font-size:1em; margin-top:10px;">फ़ॉन्ट स्टाइल</h3>
+            <div class="font-selector">
+                <button class="font-btn active" data-font="sans-serif">नॉर्मल</button>
+                <button class="font-btn" data-font="serif">सेरिफ़</button>
+                <button class="font-btn" data-font="monospace">मोनो</button>
+                <button class="font-btn" data-font="cursive">करसिव</button>
+            </div>
+
+            <h3 class="section-title" style="font-size:1em; margin-top:10px;">रंग</h3>
+            <div class="color-picker">
+                <div class="color-swatch active" style="background-color: white;" data-color="white"></div>
+                <div class="color-swatch" style="background-color: red;" data-color="red"></div>
+                <div class="color-swatch" style="background-color: blue;" data-color="blue"></div>
+                <div class="color-swatch" style="background-color: green;" data-color="green"></div>
+                <div class="color-swatch" style="background-color: yellow;" data-color="yellow"></div>
+            </div>
+            <button class="control-button primary" onclick="addTextOverlay()">टेक्स्ट जोड़ें</button>
+
+            <h3 class="section-title" style="font-size:1em; margin-top:20px;">स्टिकर</h3>
+            <div class="sticker-categories">
+                <button class="sticker-category-btn active">इमोजी</button>
+                <button class="sticker-category-btn">शेप्स</button>
+                <button class="sticker-category-btn">मूडी</button>
+                <button class="sticker-category-btn">क्यूट</button>
+            </div>
+            <div class="sticker-grid">
+                <img src="https://clipart-library.com/images/8iEbj74LT.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+                <img src="https://clipart-library.com/images/rTLoxG8Ec.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+                <img src="https://clipart-library.com/images/dcXb9kGbi.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+                <img src="https://clipart-library.com/images/kcKoEaXcj.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+                <img src="https://clipart-library.com/images/pi75kG8GT.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+                <img src="https://clipart-library.com/images/zcXkLXLoi.png" class="sticker-item" onclick="addSticker(this.src)" alt="इमोजी">
+            </div>
+        </div>
+
+        <!-- Share/Export Panel -->
+        <div id="shareExportPanel" class="share-export-panel">
+            <h2 class="section-title">📤 एक्सपोर्ट और साझा करें</h2>
+            <div class="export-option">
+                <label for="resolutionSelect">रिज़ॉल्यूशन:</label>
+                <select id="resolutionSelect">
+                    <option value="720p">720p</option>
+                    <option value="1080p" selected>1080p</option>
+                    <option value="4K">4K</option>
+                </select>
+            </div>
+            <div class="export-option">
+                <label for="fpsSelect">फ्रेम दर:</label>
+                <select id="fpsSelect">
+                    <option value="30">30fps</option>
+                    <option value="60" selected>60fps</option>
+                </select>
+            </div>
+            <div class="export-option">
+                <label for="formatSelect">फ़ॉर्मेट:</label>
+                <select id="formatSelect">
+                    <option value="mp4" selected>MP4</option>
+                    <option value="mov">MOV</option>
+                </select>
+            </div>
+            
+            <button class="export-final-btn" onclick="exportVideo()">वीडियो एक्सपोर्ट करें</button>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="exportProgressBar"></div>
+            </div>
+            <p id="exportProgressText" class="progress-text">एक्सपोर्ट करने के लिए तैयार...</p>
+
+            <h2 class="section-title" style="margin-top: 30px;">सीधा साझा करें</h2>
+            <div class="share-buttons-grid">
+                <div class="share-btn" onclick="shareTo('youtube')">
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/youtube-play--v1.png" alt="YouTube">
+                    YouTube
+                </div>
+                <div class="share-btn" onclick="shareTo('instagram')">
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/instagram-new--v1.png" alt="Instagram">
+                    Instagram
+                </div>
+                <div class="share-btn" onclick="shareTo('tiktok')">
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok--v1.png" alt="TikTok">
+                    TikTok
+                </div>
+                <div class="share-btn" onclick="shareTo('whatsapp')">
+                    <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp--v1.png" alt="WhatsApp">
+                    WhatsApp
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-screen="editorScreen" onclick="showScreen('editorScreen', this)">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/video-editing.png" alt="एडिट">
+            <span>एडिट करें</span>
+        </div>
+        <div class="nav-item" data-screen="effectsPanel" onclick="showScreen('effectsPanel', this)">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/sparkling.png" alt="प्रभाव">
+            <span>प्रभाव</span>
+        </div>
+        <div class="nav-item" data-screen="aiImagePanel" onclick="showScreen('aiImagePanel', this)">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/artificial-intelligence.png" alt="AI इमेज">
+            <span>AI इमेज</span>
+        </div>
+        <div class="nav-item" data-screen="textStickerPanel" onclick="showScreen('textStickerPanel', this)">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/add-text.png" alt="टेक्स्ट">
+            <span>टेक्स्ट</span>
+        </div>
+        <div class="nav-item" data-screen="shareExportPanel" onclick="showScreen('shareExportPanel', this)">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/upload.png" alt="एक्सपोर्ट">
+            <span>एक्सपोर्ट</span>
+        </div>
+    </div>
+
+    <script>
+        const { FFmpeg } = FFmpegWASM;
+        const ffmpeg = new FFmpeg();
+        let currentVideoFile = null;
+        let videoDuration = 0;
+        let currentActiveEffect = 'none';
+        let generatedAIImageBlob = null; // Store generated AI image blob
+
+        const preview = document.getElementById('preview');
+        const fileInput = document.getElementById('fileInput');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const mainTimeline = document.getElementById('mainTimeline');
+        const exportProgressBar = document.getElementById('exportProgressBar');
+        const exportProgressText = document.getElementById('exportProgressText');
+        const funnyClipOverlay = document.getElementById('funnyClipOverlay');
+        const funnyClipImg = document.getElementById('funnyClipImg');
+        const generatedImage = document.getElementById('generatedImage');
+        const aiPlaceholder = document.getElementById('aiPlaceholder');
+
+        // FFmpeg Initialization
+        const loadFFmpeg = async () => {
+            if (!ffmpeg.loaded) {
+                console.log('FFmpeg loading...');
+                try {
+                    await ffmpeg.load({
+                        coreURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',
+                        wasmURL: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm'
+                    });
+                    console.log('FFmpeg loaded!');
+                    // Optionally enable buttons here after loading
+                } catch (error) {
+                    console.error('Failed to load FFmpeg:', error);
+                    alert('वीडियो प्रोसेसिंग के लिए FFmpeg लोड करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।');
+                }
+            }
+        };
+
+        ffmpeg.on('log', ({ message }) => console.log(message));
+        ffmpeg.on('progress', ({ progress, time }) => {
+            const percentage = Math.round(progress * 100);
+            exportProgressBar.style.width = `${percentage}%`;
+            exportProgressText.textContent = `एक्सपोर्ट हो रहा है: ${percentage}%...`;
+        });
+
+        // Screen Navigation
+        function showScreen(screenId, navItem = null) {
+            document.querySelectorAll('.home-screen, .editor-screen, .effects-panel, .ai-image-panel, .text-sticker-panel, .share-export-panel').forEach(screen => {
+                screen.style.display = 'none';
+            });
+            document.getElementById(screenId).style.display = 'flex';
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (navItem) {
+                navItem.classList.add('active');
+            } else {
+                // If called without navItem (e.g., from 'Create New Project'), activate the editor nav item
+                document.querySelector(`.nav-item[data-screen="${screenId}"]`).classList.add('active');
+            }
+        }
+
+        // --- File Upload & Preview ---
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                currentVideoFile = file;
+                const fileURL = URL.createObjectURL(file);
+                preview.src = fileURL;
+                preview.load();
+                preview.onloadedmetadata = () => {
+                    videoDuration = preview.duration;
+                    addClipToTimeline(fileURL, 'video', videoDuration);
+                    playPauseBtn.textContent = '⏸️ रोकें';
+                    preview.play();
+                };
+            }
+        });
+
+        // Add clip to (simplified) timeline
+        function addClipToTimeline(src, type, duration) {
+            const clip = document.createElement('div');
+            clip.className = 'clip-item';
+            clip.dataset.type = type;
+            clip.dataset.src = src;
+            clip.style.width = `${duration * 10}px`; // Example: 10px per second
+            
+            if (type === 'video') {
+                const videoThumb = document.createElement('video');
+                videoThumb.src = src;
+                videoThumb.currentTime = 1; // Show a frame
+                videoThumb.muted = true;
+                videoThumb.preload = 'metadata';
+                videoThumb.onloadeddata = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = videoThumb.videoWidth;
+                    canvas.height = videoThumb.videoHeight;
+                    canvas.getContext('2d').drawImage(videoThumb, 0, 0, canvas.width, canvas.height);
+                    const img = document.createElement('img');
+                    img.src = canvas.toDataURL();
+                    clip.appendChild(img);
+                };
+            } else if (type === 'image' || type === 'sticker' || type === 'ai-image') {
+                const img = document.createElement('img');
+                img.src = src;
+                clip.appendChild(img);
+            } else if (type === 'text') {
+                const p = document.createElement('p');
+                p.textContent = src; // text content directly
+                p.style.fontSize = '0.8em';
+                p.style.whiteSpace = 'normal';
+                clip.appendChild(p);
+            }
+            mainTimeline.appendChild(clip);
+            mainTimeline.scrollLeft = mainTimeline.scrollWidth; // Scroll to end
+        }
+
+        // --- Video Player Controls ---
+        playPauseBtn.addEventListener('click', () => {
+            if (preview.paused) {
+                preview.play();
+                playPauseBtn.textContent = '⏸️ रोकें';
+            } else {
+                preview.pause();
+                playPauseBtn.textContent = '▶️ चलाएँ';
+            }
+        });
+
+        preview.addEventListener('ended', () => {
+            playPauseBtn.textContent = '▶️ चलाएँ';
+        });
+
+        // Simplified editing functions (for UI demo, actual logic would be complex)
+        function splitClip() { alert('क्लिप स्प्लिट कार्यक्षमता (FFmpeg आवश्यक)'); }
+        function trimClip() { alert('क्लिप ट्रिम कार्यक्षमता (FFmpeg आवश्यक)'); }
+        function changeSpeed() { alert('स्पीड बदलने की कार्यक्षमता (FFmpeg आवश्यक)'); }
+        function addAudio() { alert('ऑडियो जोड़ने की कार्यक्षमता (UI/FFmpeg)'); }
+        function addLayer() { alert('नई लेयर जोड़ने की कार्यक्षमता (UI/FFmpeg)'); }
+
+        // --- VFX Effects ---
+        function applyVFX(effect) {
+            document.querySelectorAll('.effect-card').forEach(card => card.classList.remove('active'));
+            document.querySelector(`.effect-card[data-effect="${effect}"]`).classList.add('active');
+            currentActiveEffect = effect;
+
+            // Simplified client-side visual effect for preview
+            if (effect === 'blur') {
+                preview.style.filter = 'blur(5px)';
+            } else if (effect === 'vintage') {
+                preview.style.filter = 'sepia(0.8) saturate(1.5)';
+            } else if (effect === 'neon') {
+                preview.style.filter = 'contrast(2) brightness(1.2) hue-rotate(180deg)';
+            } else if (effect === 'glitch') {
+                 // For actual glitch, you'd need a canvas and shader
+                 preview.style.filter = 'grayscale(0.5) contrast(1.5)';
+            } else {
+                preview.style.filter = 'none';
+            }
+            alert(`प्रभाव लागू किया गया: ${effect}`);
+        }
+
+        function addOnlineClip(src) {
+            funnyClipImg.src = src;
+            funnyClipOverlay.style.display = 'block';
+            addClipToTimeline(src, 'sticker', 5); // Add as a sticker for 5 seconds
+        }
+
+        // --- AI Image Generation ---
+        let currentAIStyle = 'photorealistic';
+        let currentAIRatio = '1:1';
+
+        document.querySelectorAll('.ai-option-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const group = btn.dataset.style ? 'style' : 'ratio';
+                document.querySelectorAll(`.ai-option-btn[data-${group}]`).forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (group === 'style') {
+                    currentAIStyle = btn.dataset.style;
+                } else {
+                    currentAIRatio = btn.dataset.ratio;
+                }
+            });
+        });
+
+        async function generateAIImage() {
+            const prompt = document.getElementById('aiPrompt').value;
+            if (!prompt) {
+                alert('कृपया AI इमेज जेनरेट करने के लिए एक प्रोम्प्ट दर्ज करें।');
+                return;
+            }
+            
+            aiPlaceholder.textContent = 'इमेज जेनरेट हो रही है...';
+            generatedImage.style.display = 'none';
+            // Simulate AI image generation
+            const dummyImageUrl = `https://via.placeholder.com/400x${currentAIRatio === '16:9' ? '225' : currentAIRatio === '9:16' ? '711' : '400'}/${currentAIStyle === 'photorealistic' ? 'ff00ff' : currentAIStyle === 'anime' ? '00ffff' : currentAIStyle === 'painting' ? 'ffff00' : '00ff00'}/ffffff?text=${prompt.substring(0,20).replace(/ /g, '+')}`;
+            
+            // In a real app, you'd make an API call to an AI service here
+            // const response = await fetch('/api/generate-image', { method: 'POST', body: JSON.stringify({ prompt, style: currentAIStyle, ratio: currentAIRatio }) });
+            // const data = await response.json();
+            // generatedAIImageBlob = data.imageUrl; // Store actual blob or URL
+
+            // For demo: directly use placeholder
+            generatedAIImageBlob = dummyImageUrl;
+            generatedImage.src = generatedAIImageBlob;
+            generatedImage.style.display = 'block';
+            aiPlaceholder.textContent = '';
+        }
+
+        function addGeneratedImageToTimeline() {
+            if (generatedAIImageBlob) {
+                addClipToTimeline(generatedAIImageBlob, 'ai-image', 5); // Add as a 5-second image
+                alert('AI जेनरेटेड इमेज टाइमलाइन में जोड़ी गई।');
+            } else {
+                alert('कृपया पहले एक AI इमेज जेनरेट करें।');
+            }
+        }
+
+        // --- Text & Sticker ---
+        let currentFont = 'sans-serif';
+        let currentTextColor = 'white';
+
+        document.querySelectorAll('.font-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFont = btn.dataset.font;
+            });
+        });
+
+        document.querySelectorAll('.color-swatch').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTextColor = btn.dataset.color;
+            });
+        });
+
+        function addTextOverlay() {
+            const text = document.getElementById('textOverlayInput').value;
+            if (text) {
+                // In a real app, you'd add this to the video preview with its style
+                addClipToTimeline(text, 'text', 5);
+                alert(`टेक्स्ट जोड़ा गया: "${text}" (फ़ॉन्ट: ${currentFont}, रंग: ${currentTextColor})`);
+            } else {
+                alert('कृपया जोड़ने के लिए कुछ टेक्स्ट दर्ज करें।');
+            }
+        }
+
+        function addSticker(src) {
+            // In a real app, you'd add this as an overlay on the video preview
+            addClipToTimeline(src, 'sticker', 5);
+            alert('स्टिकर टाइमलाइन में जोड़ा गया।');
+        }
+
+        // --- Export & Share ---
+        async function exportVideo() {
+            if (!currentVideoFile || !ffmpeg.loaded) {
+                alert('कृपया पहले एक वीडियो अपलोड करें और सुनिश्चित करें कि FFmpeg लोड हो गया है।');
+                return;
+            }
+
+            const resolution = document.getElementById('resolutionSelect').value;
+            const fps = document.getElementById('fpsSelect').value;
+            const format = document.getElementById('formatSelect').value;
+
+            exportProgressText.textContent = 'एक्सपोर्ट शुरू हो रहा है...';
+            exportProgressBar.style.width = '0%';
+
+            try {
+                // Write the input video file to FFmpeg's virtual file system
+                ffmpeg.FS('writeFile', 'input.mp4', await FFmpegWASM.fetchFile(currentVideoFile));
+
+                // Construct FFmpeg command based on effects, resolution, fps, etc.
+                let vf_filter = '';
+                if (currentActiveEffect === 'blur') vf_filter = 'boxblur=5';
+                else if (currentActiveEffect === 'glitch') vf_filter = 'split[a],fifo,[a]fifo,overlay'; // Simple glitch
+                else if (currentActiveEffect === 'vintage') vf_filter = 'colorlevels=rimin=0.039:gimin=0.039:bimin=0.039:rimax=0.961:gimax=0.961:bimax=0.961,curves=all=\'0/0.15 0.5/0.7 1/1\''; // Example vintage
+                else if (currentActiveEffect === 'neon') vf_filter = 'colorchannelmixer=.3:.4:.3:0:.3:.4:.3:0:.3:.4:.3:0'; // Simplified neon
+
+                const resolutionMap = {
+                    '720p': '1280x720',
+                    '1080p': '1920x1080',
+                    '4K': '3840x2160'
+                };
+                const outputResolution = resolutionMap[resolution];
+
+                const ffmpeg_args = [
+                    '-i', 'input.mp4',
+                    '-vf', vf_filter ? `${vf_filter},scale=${outputResolution}` : `scale=${outputResolution}`,
+                    '-r', fps, // Set frame rate
+                    '-preset', 'fast', // Faster export
+                    '-c:v', 'libx264',
+                    '-crf', '28', // Compression quality (lower is better quality, larger file)
+                    '-movflags', 'faststart',
+                    `output.${format}`
+                ];
+
+                await ffmpeg.exec(ffmpeg_args);
+
+                // Read the output file from FFmpeg's virtual file system
+                const data = await ffmpeg.FS('readFile', `output.${format}`);
+                const blob = new Blob([data.buffer], { type: `video/${format}` });
+                const url = URL.createObjectURL(blob);
+
+                // Create a download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `exported_video.${format}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                exportProgressText.textContent = 'एक्सपोर्ट पूरा हुआ! 🎉';
+            } catch (error) {
+                console.error('वीडियो एक्सपोर्ट करने में त्रुटि:', error);
+                exportProgressText.textContent = 'एक्सपोर्ट विफल रहा। 😔';
+                alert('वीडियो एक्सपोर्ट करने में त्रुटि आई। कंसोल देखें।');
+            } finally {
+                // Clean up FFmpeg's file system (optional)
+                ffmpeg.FS('unlink', 'input.mp4').catch(e => console.warn("Failed to unlink input.mp4", e));
+                ffmpeg.FS('unlink', `output.${format}`).catch(e => console.warn("Failed to unlink output file", e));
+            }
+        }
+
+        function shareTo(platform) {
+            alert(`वीडियो ${platform} पर साझा करने के लिए तैयार है! (यह एक डेमो है, वास्तविक साझाकरण कार्यक्षमता के लिए API एकीकरण की आवश्यकता होगी)`);
+            // In a real app, you would use Web Share API or platform-specific SDKs
+        }
+
+        // Initialize with Home Screen
+        showScreen('homeScreen');
+    </script>
+</body>
+</html>
+
